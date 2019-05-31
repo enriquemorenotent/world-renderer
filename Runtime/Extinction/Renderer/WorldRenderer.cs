@@ -19,12 +19,16 @@ namespace Extinction.Renderer
         public World config;
 
         // Size of world meassured in Chunks
-        [Range(2, 50)]
+        [Range(2, 20)]
         public int radius = 2;
 
         // Size of a chunk meassured in world units
-        [Range(2, 50)]
+        [Range(2, 30)]
         public int chunkSize = 10;
+
+        // Size of world meassured in Chunks
+        [Range(2, 20)]
+        public int cacheRadius = 5;
 
         public Dictionary<Vector3, GameObject> renderedChunks = new Dictionary<Vector3, GameObject>();
 
@@ -64,7 +68,7 @@ namespace Extinction.Renderer
             this.config.Setup();
             this.detector = GetComponent<DistanceDetector>();
             this.dataPreloader = GetComponent<DataPreloader>();
-            this.dataPreloader.Launch(radius + 5, chunkSize);
+            this.dataPreloader.Launch(this.radius + this.cacheRadius, this.chunkSize);
         }
 
         void Start()
