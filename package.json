@@ -1,0 +1,15 @@
+{
+  "name": "com.tamagames.extinction.word-renderer",
+  "version": "1.0.0",
+  "displayName": "Extinction - World renderer",
+  "description": "World renderer for Extinction",
+  "unity": "2019.1",
+  "unityRelease": "0b5",
+  "dependencies": {},
+  "keywords": [],
+  "author": {
+    "name": "Enrique Moreno Tent",
+    "email": "enriquemorenotent@gmail.com",
+    "url": "https://enriquemorenotent.com"
+  }
+}
