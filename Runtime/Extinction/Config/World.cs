@@ -109,12 +109,12 @@ namespace Extinction.Config
 
         #region Generate Terrain ID
 
-        TerrainID GenerateTerrainIdAt(Vector2 position)
+        public TerrainID GenerateTerrainIdAt(Vector2 position)
         {
             return GenerateTerrainIdAt(position.x, position.y);
         }
 
-        TerrainID GenerateTerrainIdAt(float x, float z)
+        public TerrainID GenerateTerrainIdAt(float x, float z)
         {
             int biomeID, terrain;
             biomeID = biomeMap.At(x, z);
