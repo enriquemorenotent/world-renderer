@@ -8,30 +8,62 @@ using Extinction.Utils;
 namespace Extinction.Config
 {
     [System.Serializable]
+    public class WeightedProp
+    {
+        public string name = "not-named";
+        public GameObject prefab;
+        public int weight = 100;
+    }
+
+    [System.Serializable]
     public class Biome
     {
         #region Attributes
 
         public string name;
         public List<int> terrains;
-        public List<GameObject> props;
+        public List<WeightedProp> props;
 
         Noise propDistribution;
 
+        [Header("Which prop?")]
         [Range(0.0f, 1.0f)]
         public float propsThreshold = 0.5f;
 
-        [Range(1.0f, 200.0f)]
+        [Range(1f, 200.0f)]
         public float propsScale = 10f;
 
         #endregion
 
+        public int TotalPropWeight()
+        {
+            int total = 0;
+
+            foreach (var prop in this.props)
+            {
+                total += prop.weight;
+            }
+
+            return total;
+        }
+
+        public GameObject GetPropForWeight(int index)
+        {
+            foreach (var prop in this.props)
+            {
+                if (prop.weight > index) return prop.prefab;
+                index -= prop.weight;
+            }
+
+            return this.props[0].prefab;
+        }
+
         public GameObject GetProp(float x, float z)
         {
             if (this.propDistribution == null)
-                this.propDistribution = new Noise(propsThreshold, propsScale, props.Count - 1, 666);
+                this.propDistribution = new Noise(propsThreshold, propsScale, this.TotalPropWeight() - 1, 666);
 
-            return this.props[this.propDistribution.At(x, z)];
+            return this.GetPropForWeight(this.propDistribution.At(x, z));
         }
     }
 }

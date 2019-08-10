@@ -48,8 +48,16 @@ namespace Extinction.Config
 
         #region Other attributes
 
-        Noise heightMap, biomeMap, propMap;
+        Noise heightMap, biomeMap, hasPropMap;
         Cache<Vector2, TerrainID> terrainMap;
+
+        [Header("Has prop?")]
+        [Range(0.0f, 1.0f)]
+        public float hasPropThreshold = 0.5f;
+
+        [Range(1.0f, 200.0f)]
+        public float hasPropScale = 10f;
+
 
         [Header("Main configuration")]
         public int masterSeed;
@@ -72,7 +80,7 @@ namespace Extinction.Config
         {
             this.heightMap = new Noise(heightThreshold, heightScale, maxHeight, masterSeed);
             this.biomeMap = new Noise(biomeThreshold, biomeScale, biomes.Count - 1, masterSeed + 1);
-            this.propMap = new Noise(propsThreshold, propsScale, maxHeight, masterSeed);
+            this.hasPropMap = new Noise(hasPropThreshold, hasPropScale, 100, masterSeed);
             this.terrainMap = new Cache<Vector2, TerrainID>(this.GenerateTerrainIdAt);
         }
 
@@ -88,7 +96,7 @@ namespace Extinction.Config
 
         public bool HasPropAt(float x, float z)
         {
-            return propMap.At(x, z) > 6;
+            return this.hasPropMap.At(x, z) > 80;
         }
 
         public List<TileID> GetTileIDsAt(float x, float z)
@@ -102,7 +110,7 @@ namespace Extinction.Config
 
         public GameObject GetProp(float x, float z)
         {
-            return biomes[0].props[0];
+            return biomes[0].props[0].prefab;
         }
 
         #endregion
