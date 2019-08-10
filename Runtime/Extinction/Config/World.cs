@@ -10,6 +10,9 @@ namespace Extinction.Config
     [CreateAssetMenu(fileName = "Config", menuName = "Extinction/Config/World", order = 1)]
     public class World : ScriptableObject
     {
+        [Range(0, 100)]
+        public int propSparsity = 70;
+
         #region Height noise
 
         [Header("Height noise configuration")]
@@ -78,25 +81,25 @@ namespace Extinction.Config
 
         public void Setup()
         {
-            this.heightMap = new Noise(heightThreshold, heightScale, maxHeight, masterSeed);
-            this.biomeMap = new Noise(biomeThreshold, biomeScale, biomes.Count - 1, masterSeed + 1);
-            this.hasPropMap = new Noise(hasPropThreshold, hasPropScale, 100, masterSeed);
-            this.terrainMap = new Cache<Vector2, TerrainID>(this.GenerateTerrainIdAt);
+            heightMap = new Noise(heightThreshold, heightScale, maxHeight, masterSeed);
+            biomeMap = new Noise(biomeThreshold, biomeScale, biomes.Count - 1, masterSeed + 1);
+            hasPropMap = new Noise(hasPropThreshold, hasPropScale, 100, masterSeed);
+            terrainMap = new Cache<Vector2, TerrainID>(GenerateTerrainIdAt);
         }
 
         public int GetHeight(float x, float z)
         {
-            return this.heightMap.At(x, z);
+            return heightMap.At(x, z);
         }
 
         public Biome GetBiome(float x, float z)
         {
-            return this.biomes[this.biomeMap.At(x, z)];
+            return biomes[biomeMap.At(x, z)];
         }
 
         public bool HasPropAt(float x, float z)
         {
-            return this.hasPropMap.At(x, z) > 80;
+            return hasPropMap.At(x, z) > propSparsity;
         }
 
         public List<TileID> GetTileIDsAt(float x, float z)
