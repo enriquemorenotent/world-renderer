@@ -18,7 +18,7 @@ namespace Extinction.Config
     [System.Serializable]
     public class Biome
     {
-        #region Attributes
+        // Attributes
 
         public string name;
         public List<int> terrains;
@@ -27,13 +27,7 @@ namespace Extinction.Config
         Noise propDistribution;
 
         [Header("Which prop?")]
-        [Range(0.0f, 1.0f)]
-        public float propsThreshold = 0.5f;
-
-        [Range(1f, 200.0f)]
-        public float propsScale = 10f;
-
-        #endregion
+        [Range(1f, 200.0f)] public float propsScale = 10f;
 
         public int TotalPropWeight()
         {
@@ -61,7 +55,7 @@ namespace Extinction.Config
         public GameObject GetProp(float x, float z)
         {
             if (this.propDistribution == null)
-                this.propDistribution = new Noise(propsThreshold, propsScale, this.TotalPropWeight() - 1, 666);
+                this.propDistribution = new Noise(propsScale, this.TotalPropWeight() - 1, 666);
 
             return this.GetPropForWeight(this.propDistribution.At(x, z));
         }

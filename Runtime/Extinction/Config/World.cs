@@ -10,80 +10,34 @@ namespace Extinction.Config
     [CreateAssetMenu(fileName = "Config", menuName = "Extinction/Config/World", order = 1)]
     public class World : ScriptableObject
     {
-        [Range(0, 100)]
-        public int propSparsity = 70;
-
-        #region Height noise
-
-        [Header("Height noise configuration")]
-
-        [Range(0.0f, 1.0f)]
-        public float heightThreshold;
-
-        [Range(0.0f, 200.0f)]
-        public float heightScale;
-
-        #endregion
-
-        #region Props noise
-
-        [Header("Props noise configuration")]
-
-        [Range(0.0f, 1.0f)]
-        public float propsThreshold;
-
-        [Range(0.0f, 200.0f)]
-        public float propsScale;
-
-        #endregion
-
-        #region Biome noise
-
-        [Header("Biome noise configuration")]
-
-        [Range(0.0f, 1.0f)]
-        public float biomeThreshold;
-
-        [Range(0.0f, 200.0f)]
-        public float biomeScale;
-
-        #endregion
-
-        #region Other attributes
-
         Noise heightMap, biomeMap, hasPropMap;
         Cache<Vector2, TerrainID> terrainMap;
 
-        [Header("Has prop?")]
-        [Range(0.0f, 1.0f)]
-        public float hasPropThreshold = 0.5f;
-
-        [Range(1.0f, 200.0f)]
-        public float hasPropScale = 10f;
-
+        [Header("Noise scale")]
+        [Range(0.0f, 200.0f)] public float heightScale;
+        [Range(0.0f, 200.0f)] public float propsScale;
+        [Range(0.0f, 200.0f)] public float biomeScale;
+        [Range(1.0f, 200.0f)] public float hasPropScale = 10f;
 
         [Header("Main configuration")]
-        public int masterSeed;
+        [Range(0, 9999)] public int masterSeed;
+        [Range(0, 100)] public int propSparsity = 70;
+        [Range(3, 15)] public int maxHeight = 20;
 
-        [Range(3, 15)]
-        public int maxHeight = 20;
-
-        [Header("Texture")]
+        [Header("Textures")]
         public Sprite sprite;
         public int columns, rows;
 
-        [Header("Biomes")]
+        [Header("Ecosystem")]
         public List<Biome> biomes;
-
-        #endregion
 
         #region Public methods
 
         public void Setup()
         {
-            heightMap = new Noise(heightThreshold, heightScale, maxHeight, masterSeed);
-            biomeMap = new Noise(biomeThreshold, biomeScale, biomes.Count - 1, masterSeed + 1);
-            hasPropMap = new Noise(hasPropThreshold, hasPropScale, 100, masterSeed);
+            heightMap = new Noise(heightScale, maxHeight, masterSeed);
+            biomeMap = new Noise(biomeScale, biomes.Count - 1, masterSeed + 1);
+            hasPropMap = new Noise(hasPropScale, 100, masterSeed);
             terrainMap = new Cache<Vector2, TerrainID>(GenerateTerrainIdAt);
         }
 
@@ -132,7 +86,7 @@ namespace Extinction.Config
             if (IsFlat(x, z))
             {
                 List<int> terrains = biomes[biomeID].terrains;
-                terrain = Noise.GetValue(x, z, biomeThreshold, biomeScale, (terrains.Count - 1), (masterSeed + 2));
+                terrain = Noise.GetValue(x, z, biomeScale, (terrains.Count - 1), (masterSeed + 2));
             }
             else
             {
