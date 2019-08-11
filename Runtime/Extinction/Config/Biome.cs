@@ -1,7 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using System;
 using Extinction.Renderer;
 using Extinction.Utils;
 
@@ -23,25 +24,13 @@ namespace Extinction.Config
         public string name;
         public List<int> terrains;
         public List<WeightedProp> props;
+        [Range(1f, 200.0f)] public float propDistributionScale = 10f;
 
         Noise propDistribution;
 
-        [Header("Which prop?")]
-        [Range(1f, 200.0f)] public float propsScale = 10f;
+        int TotalPropWeight => this.props.Aggregate(0, (accum, item) => accum + item.weight);
 
-        public int TotalPropWeight()
-        {
-            int total = 0;
-
-            foreach (var prop in this.props)
-            {
-                total += prop.weight;
-            }
-
-            return total;
-        }
-
-        public GameObject GetPropForWeight(int index)
+        GameObject GetPropForWeight(int index)
         {
             foreach (var prop in this.props)
             {
@@ -55,7 +44,7 @@ namespace Extinction.Config
         public GameObject GetProp(float x, float z)
         {
             if (this.propDistribution == null)
-                this.propDistribution = new Noise(propsScale, this.TotalPropWeight() - 1, 666);
+                this.propDistribution = new Noise(propDistributionScale, TotalPropWeight - 1, 666);
 
             return this.GetPropForWeight(this.propDistribution.At(x, z));
         }

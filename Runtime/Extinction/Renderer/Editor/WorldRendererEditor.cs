@@ -8,40 +8,51 @@ namespace Extinction.Renderer
     [CustomEditor(typeof(WorldRenderer))]
     public class WorldRendererEditor : Editor
     {
+        private SerializedProperty config , chunkPool , radius , chunkSize , cacheRadius;
+
+        public void OnEnable()
+        {
+            config      = serializedObject.FindProperty("config");
+            chunkPool   = serializedObject.FindProperty("chunkPool");
+            radius      = serializedObject.FindProperty("radius");
+            chunkSize   = serializedObject.FindProperty("chunkSize");
+            cacheRadius = serializedObject.FindProperty("cacheRadius");
+        }
+
         public override void OnInspectorGUI()
         {
-            WorldRenderer worldRenderer = (WorldRenderer)target;
-
-            worldRenderer.config = (World)EditorGUILayout.ObjectField("Configuration", worldRenderer.config, typeof(World), true);
-
-            worldRenderer.chunkPool = (Pool)EditorGUILayout.ObjectField("Chunk pool", worldRenderer.chunkPool, typeof(Pool), true);
+            serializedObject.Update();
 
             GUILayout.Space(10);
 
-            EditorGUILayout.LabelField("Map meassurements", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(config);
+            EditorGUILayout.PropertyField(chunkPool);
 
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            worldRenderer.radius = EditorGUILayout.IntSlider("Radius:", worldRenderer.radius, 2, 50);
-            EditorGUILayout.LabelField("Defines the radius of the map rendered, meassured in chunks");
+            GUILayout.Space(10);
+
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+
+                EditorGUILayout.LabelField("Chunks configuration", EditorStyles.boldLabel);
+
+                GUILayout.Space(8);
+
+                EditorGUILayout.PropertyField(radius, new GUIContent("Radius"));
+                EditorGUILayout.LabelField("Defines the radius of the map rendered, meassured in chunks");
+
+                GUILayout.Space(16);
+
+                EditorGUILayout.PropertyField(chunkSize);
+                EditorGUILayout.LabelField("Defines the radius of a chunk, meassured in world units");
+
+                GUILayout.Space(16);
+
+                EditorGUILayout.PropertyField(cacheRadius);
+                EditorGUILayout.LabelField("Defines the radius that will be preloaded, even if it is not rendered");
+                EditorGUILayout.LabelField("Example: 'Radius = 4' and 'Cache radius = 2' will cache a radius of 6 units");
+
             EditorGUILayout.EndVertical();
 
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            worldRenderer.chunkSize = EditorGUILayout.IntSlider("Chunk size", worldRenderer.chunkSize, 2, 50);
-            EditorGUILayout.LabelField("Defines the radius of a chunk, meassured in world units");
-            EditorGUILayout.EndVertical();
-
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            worldRenderer.cacheRadius = EditorGUILayout.IntSlider("Cache radius", worldRenderer.cacheRadius, 2, 50);
-            EditorGUILayout.LabelField("Defines the radius that will be preloaded, even if it is not rendered");
-            EditorGUILayout.LabelField("Example: 'Radius = 4' and 'Cache radius = 2' will cache a radius of 6 units");
-            EditorGUILayout.EndVertical();
-
-            if (EditorApplication.isPlaying)
-            {
-                EditorGUILayout.HelpBox("Chunks rendered: " + worldRenderer.renderedChunks.Count, MessageType.Info);
-            }
-
-            EditorUtility.SetDirty(worldRenderer);
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }

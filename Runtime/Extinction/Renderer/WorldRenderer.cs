@@ -19,16 +19,13 @@ namespace Extinction.Renderer
         public World config;
 
         // Size of world meassured in Chunks
-        [Range(2, 20)]
-        public int radius = 2;
+        [Range(2, 20)] public int radius = 2;
 
         // Size of a chunk meassured in world units
-        [Range(2, 30)]
-        public int chunkSize = 10;
+        [Range(2, 30)] public int chunkSize = 10;
 
         // Size of world meassured in Chunks
-        [Range(2, 20)]
-        public int cacheRadius = 5;
+        [Range(2, 20)] public int cacheRadius = 5;
 
         public Dictionary<Vector3, GameObject> renderedChunks = new Dictionary<Vector3, GameObject>();
 
