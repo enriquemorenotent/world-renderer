@@ -24,7 +24,9 @@ namespace Extinction.Renderer
                         PropData propData = new PropData();
                         propData.position = position;
                         propData.position.y = WorldRenderer.Config().GetHeight(position.x, position.z);
-                        propData.position += Vector3.one / 2;
+                        propData.position.x += 0.5f;
+                        propData.position.z += 0.5f;
+                        propData.position.y += WorldRenderer.Instance.config.propVerticalOffset;
                         propData.prefab = WorldRenderer.Config().GetBiome(position.x, position.z).GetProp(position.x, position.z);
                         dataList.Add(propData);
                     }

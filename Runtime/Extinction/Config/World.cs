@@ -23,6 +23,8 @@ namespace Extinction.Config
         [Range(0, 9999)] public int masterSeed;
         [Range(0, 100)] public int propSparsity = 70;
         [Range(3, 15)] public int maxHeight = 20;
+        public float propVerticalOffset = 0.5f;
+
 
         [Header("Textures")]
         public Sprite sprite;
@@ -30,8 +32,6 @@ namespace Extinction.Config
 
         [Header("Ecosystem")]
         public List<Biome> biomes;
-
-        public Biome boo = new Biome();
 
         // Methods
 
