@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
+using DigitalRuby.Threading;
 using Extinction.Config;
 using Extinction.Utils;
 
@@ -27,7 +29,11 @@ namespace Extinction.Renderer
         // Size of world meassured in Chunks
         [Range(2, 20)] public int cacheRadius = 5;
 
+        // Size of world meassured in Chunks
+        [Range(300, 2000)] public int visitedChunkBufferRange = 500;
+
         public Dictionary<Vector3, GameObject> renderedChunks = new Dictionary<Vector3, GameObject>();
+        public List<Vector3> visitedChunks = new List<Vector3>();
 
         #endregion
 
@@ -109,7 +115,9 @@ namespace Extinction.Renderer
 
         #endregion
 
-        #region Chunks
+        //
+        // Chunk control
+        //
 
         void DeleteDistantChunks()
         {
@@ -123,16 +131,16 @@ namespace Extinction.Renderer
                 pair.Value.GetComponent<ChunkRenderer>().ToPool();
                 this.renderedChunks.Remove(pair.Key);
             }
+
+            visitedChunks.RemoveAll(position => Vector3.Distance(transform.position, position) > visitedChunkBufferRange);
         }
 
-        bool isChunkRenderedAt(Vector3 position)
-        {
-            return this.renderedChunks.ContainsKey(position);
-        }
+        bool isChunkRenderedAt(Vector3 position) => renderedChunks.ContainsKey(position);
 
         void TrackChunk(GameObject chunkInstance, Vector3 position)
         {
-            this.renderedChunks.Add(position, chunkInstance);
+            renderedChunks.Add(position, chunkInstance);
+            if (!visitedChunks.Contains(position)) visitedChunks.Add(position);
         }
 
         void InstantiateChunk(int x, int z)
@@ -151,17 +159,27 @@ namespace Extinction.Renderer
             TrackChunk(chunkInstance, position);
         }
 
-        #endregion
-
         void UpdateRenderPoint(Vector3 drawPoint)
         {
             transform.position = drawPoint;
+            onRenderPointUpdated.Invoke();
             dataPreloader.SetDirty();
             DeleteDistantChunks();
 
             for (int z = -radius; z <= radius; z++)
                 for (int x = -radius; x <= radius; x++)
                     InstantiateChunk(x, z);
+        }
+
+        //
+        // Events
+        //
+
+		static UnityEvent onRenderPointUpdated = new UnityEvent();
+
+        public void OnRenderPointUpdated(UnityAction action)
+        {
+            onRenderPointUpdated.AddListener(action);
         }
     }
 }

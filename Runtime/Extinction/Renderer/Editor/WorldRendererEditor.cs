@@ -8,15 +8,17 @@ namespace Extinction.Renderer
     [CustomEditor(typeof(WorldRenderer))]
     public class WorldRendererEditor : Editor
     {
-        private SerializedProperty config , chunkPool , radius , chunkSize , cacheRadius;
+        private SerializedProperty config , chunkPool , radius , chunkSize , cacheRadius, visitedChunkBufferRange;
 
         public void OnEnable()
         {
-            config      = serializedObject.FindProperty("config");
-            chunkPool   = serializedObject.FindProperty("chunkPool");
-            radius      = serializedObject.FindProperty("radius");
-            chunkSize   = serializedObject.FindProperty("chunkSize");
-            cacheRadius = serializedObject.FindProperty("cacheRadius");
+            config                  = serializedObject.FindProperty("config");
+            chunkPool               = serializedObject.FindProperty("chunkPool");
+            radius                  = serializedObject.FindProperty("radius");
+            chunkSize               = serializedObject.FindProperty("chunkSize");
+            cacheRadius             = serializedObject.FindProperty("cacheRadius");
+            visitedChunkBufferRange = serializedObject.FindProperty("visitedChunkBufferRange");
+
         }
 
         public override void OnInspectorGUI()
@@ -27,6 +29,7 @@ namespace Extinction.Renderer
 
             EditorGUILayout.PropertyField(config);
             EditorGUILayout.PropertyField(chunkPool);
+            EditorGUILayout.PropertyField(visitedChunkBufferRange);
 
             GUILayout.Space(10);
 

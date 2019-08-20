@@ -12,6 +12,7 @@ namespace Extinction.Config
     {
         Noise heightMap, biomeMap, hasPropMap;
         Cache<Vector2, TerrainID> terrainMap;
+        public Cache<Vector2, Color> colorMap;
 
         [Header("Noise scale")]
         [Range(1.0f, 200.0f)] public float heightScale;
@@ -41,13 +42,14 @@ namespace Extinction.Config
             biomeMap   = new Noise(biomeScale, biomes.Count - 1, masterSeed + 1);
             hasPropMap = new Noise(hasPropScale, 100, masterSeed);
             terrainMap = new Cache<Vector2, TerrainID>(GenerateTerrainIdAt);
+            colorMap   = new Cache<Vector2, Color>(GenerateTerrainColor);
         }
 
         public int GetHeight(float x, float z) => heightMap.At(x, z);
 
         public Biome GetBiome(float x, float z) => biomes[biomeMap.At(x, z)];
 
-        public List<int> GetTerrains(float x, float z) => GetBiome(x, z).terrains;
+        public List<Extinction.Data.Terrain> GetTerrains(float x, float z) => GetBiome(x, z).terrains;
 
         public bool HasPropAt(float x, float z) => hasPropMap.At(x, z) > propSparsity;
 
@@ -59,6 +61,7 @@ namespace Extinction.Config
             TerrainID t1 = GetTerrainIDAt(x + 1, z + 1);
             TerrainID t2 = GetTerrainIDAt(x + 0, z + 0);
             TerrainID t3 = GetTerrainIDAt(x + 1, z + 0);
+
             return TileID.CreateList(t0, t1, t2, t3);
         }
 
@@ -76,9 +79,21 @@ namespace Extinction.Config
             return new TerrainID(biomeID, terrain);
         }
 
-        // Other
-
         TerrainID GetTerrainIDAt(float x, float z) => terrainMap.At(new Vector2(x, z));
+
+        // Color
+
+        public Color GenerateTerrainColor(Vector2 position) => GenerateTerrainColor(position.x, position.y);
+
+        public Color GenerateTerrainColor(float x, float z)
+        {
+            TerrainID terrainID = GetTerrainIDAt(x, z);
+            return biomes[terrainID.biome].terrains[terrainID.terrain].color;
+        }
+
+        public Color GetTerrainColor(float x, float z) => colorMap.At(new Vector2(x, z));
+
+        // Other
 
         bool IsFlat(float x, float z)
         {
@@ -89,13 +104,14 @@ namespace Extinction.Config
             return t00 == t10 && t00 == t01 && t00 == t11;
         }
 
+
         // UVs
 
         public List<Vector2> GetUVsFor(TileID tt) => GetUVsFor(tt.terrainID.biome, tt.terrainID.terrain, tt.nscode);
 
         public List<Vector2> GetUVsFor(int biomeIndex, int terrainIndex, int nscode)
         {
-            int row = biomes[biomeIndex].terrains[terrainIndex];
+            int row = biomes[biomeIndex].terrains[terrainIndex].row;
             return GetUVsFor(nscode, row);
         }
 

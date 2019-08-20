@@ -9,21 +9,13 @@ using Extinction.Utils;
 namespace Extinction.Config
 {
     [System.Serializable]
-    public class WeightedProp
-    {
-        public string name = "not-named";
-        public GameObject prefab;
-        public int weight = 100;
-    }
-
-    [System.Serializable]
     public class Biome
     {
         // Attributes
 
         public string name;
-        public List<int> terrains;
-        public List<WeightedProp> props;
+        public List<Extinction.Data.Terrain> terrains;
+        public List<Extinction.Data.WeightedProp> props;
         [Range(1f, 200.0f)] public float propDistributionScale = 10f;
 
         Noise propDistribution;

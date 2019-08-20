@@ -17,10 +17,10 @@ namespace Extinction.Renderer
         // can only be read from the main thread
         Vector3 transformPosition;
 
-        public void Launch(int loadRadius, int chunkSize)
+        public void Launch(int _loadRadius, int _chunkSize)
         {
-            this.chunkSize = chunkSize;
-            this.loadRadius = loadRadius;
+            chunkSize = _chunkSize;
+            loadRadius = _loadRadius;
             EZThread.BeginThread(UpdateThread, false);
         }
 
