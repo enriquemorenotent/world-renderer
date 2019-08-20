@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Extinction.Config;
 
 namespace Extinction.Renderer
 {
@@ -11,26 +12,24 @@ namespace Extinction.Renderer
         public static List<PropData> LoadDataAt(Vector3 chunkPosition, int chunkSize)
         {
             List<PropData> dataList = new List<PropData>();
+            World config = WorldRenderer.Config();
 
             for (float z = -chunkSize - 0.5f; z <= chunkSize - 0.5f; z++)
-                for (float x = -chunkSize - 0.5f; x <= chunkSize - 0.5f; x++)
+            for (float x = -chunkSize - 0.5f; x <= chunkSize - 0.5f; x++)
+            {
+                Vector3 position = chunkPosition + new Vector3(x, 20, z);
+
+                if (config.HasPropAt(position.x, position.z))
                 {
-                    Vector3 position = chunkPosition + new Vector3(x, 20, z);
-
-                    bool hasProp = WorldRenderer.Config().HasPropAt(position.x, position.z);
-
-                    if (hasProp)
-                    {
-                        PropData propData = new PropData();
-                        propData.position = position;
-                        propData.position.y = WorldRenderer.Config().GetHeight(position.x, position.z);
-                        propData.position.x += 0.5f;
-                        propData.position.z += 0.5f;
-                        propData.position.y += WorldRenderer.Instance.config.propVerticalOffset;
-                        propData.prefab = WorldRenderer.Config().GetBiome(position.x, position.z).GetProp(position.x, position.z);
-                        dataList.Add(propData);
-                    }
+                    PropData propData = new PropData();
+                    propData.position = position;
+                    propData.position.y = config.GetHeight(position.x, position.z) + config.propVerticalOffset;
+                    propData.position.x += 0.5f;
+                    propData.position.z += 0.5f;
+                    propData.prefab = config.GetProp(position.x, position.z);
+                    dataList.Add(propData);
                 }
+            }
 
             return dataList;
         }

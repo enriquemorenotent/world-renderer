@@ -53,7 +53,7 @@ namespace Extinction.Config
 
         public bool HasPropAt(float x, float z) => hasPropMap.At(x, z) > propSparsity;
 
-        public GameObject GetProp(float x, float z) => biomes[0].props[0].prefab;
+        public GameObject GetProp(float x, float z) => GetBiome(x, z).GetProp(x, z);
 
         public List<TileID> GetTileIDsAt(float x, float z)
         {
@@ -103,7 +103,6 @@ namespace Extinction.Config
             int t11 = GetHeight(x - 1, z - 1);
             return t00 == t10 && t00 == t01 && t00 == t11;
         }
-
 
         // UVs
 

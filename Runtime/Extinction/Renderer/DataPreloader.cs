@@ -1,40 +1,36 @@
-using DigitalRuby.Threading;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Extinction.Renderer
 {
-    public class DataPreloader : MonoBehaviour
+    public class DataPreloader
     {
-        public Dictionary<Vector3, ChunkData> chunkDataCache = new Dictionary<Vector3, ChunkData>();
+        public Dictionary<Vector3, ChunkData> cache = new Dictionary<Vector3, ChunkData>();
 
-        bool dirty;
         int loadRadius;
         int chunkSize;
 
-        // We write here transform.position, because Transform
-        // can only be read from the main thread
-        Vector3 transformPosition;
+        Vector3 dataPoint;
 
-        public void Launch(int _loadRadius, int _chunkSize)
+        public DataPreloader(int _loadRadius, int _chunkSize, Vector3 position)
         {
             chunkSize = _chunkSize;
             loadRadius = _loadRadius;
-            EZThread.BeginThread(UpdateThread, false);
+            LoadAround(position);
         }
 
-        public void SetDirty()
+        public void LoadAround(Vector3 position)
         {
-            dirty = true;
-            transformPosition = transform.position;
+            dataPoint = position;
+            Task.Run(UpdateData);
         }
 
-        void UpdateThread()
+        void UpdateData()
         {
-            if (dirty)
+            lock (cache)
             {
-                dirty = false;
                 RemoveUselessData();
                 CollectData();
             }
@@ -42,32 +38,27 @@ namespace Extinction.Renderer
 
         void RemoveUselessData()
         {
-            var toRemove = this.chunkDataCache.Where(pair =>
-                Mathf.Abs(pair.Key.x - transformPosition.x) > loadRadius * (chunkSize * 2 + 1) ||
-                Mathf.Abs(pair.Key.z - transformPosition.z) > loadRadius * (chunkSize * 2 + 1)
+            var toRemove = cache.Where(pair =>
+                Mathf.Abs(pair.Key.x - dataPoint.x) > loadRadius * (chunkSize * 2 + 1) ||
+                Mathf.Abs(pair.Key.z - dataPoint.z) > loadRadius * (chunkSize * 2 + 1)
             ).ToList();
 
-            foreach (var pair in toRemove)
-            {
-                this.chunkDataCache.Remove(pair.Key);
-            }
+            foreach (var pair in toRemove) cache.Remove(pair.Key);
         }
 
         void CollectData()
         {
+            int diameter = chunkSize * 2 + 1;
+            Vector3 position;
+
             for (int z = -loadRadius; z <= loadRadius; z++)
-                for (int x = -loadRadius; x <= loadRadius; x++)
-                {
-                    if (dirty) return;
+            for (int x = -loadRadius; x <= loadRadius; x++)
+            {
+                position = new Vector3(dataPoint.x + x * diameter, 0, dataPoint.z + z * diameter);
 
-                    Vector3 position = new Vector3(transformPosition.x + x * (chunkSize * 2 + 1), 0, transformPosition.z + z * (chunkSize * 2 + 1));
-
-                    if (!this.chunkDataCache.ContainsKey(position))
-                    {
-                        ChunkData chunkData = ChunkData.LoadDataAt(position, chunkSize);
-                        this.chunkDataCache.Add(position, chunkData);
-                    }
-                }
+                if (!cache.ContainsKey(position))
+                    cache.Add(position, ChunkData.LoadDataAt(position, chunkSize));
+            }
         }
     }
 }

@@ -88,7 +88,7 @@ namespace Extinction.Renderer
         public void ToPool()
         {
             foreach (GameObject prop in this.propsRendered) Destroy(prop);
-            WorldRenderer.Instance.chunkPool.AddToPool(this.gameObject);
+            WorldRenderer.singleton.chunkPool.AddToPool(this.gameObject);
         }
     }
 }
