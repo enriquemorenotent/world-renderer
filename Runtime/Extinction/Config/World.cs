@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using Extinction.Renderer;
 using Extinction.Utils;
 
@@ -18,6 +16,7 @@ namespace Extinction.Config
         [Range(1.0f, 200.0f)] public float heightScale;
         [Range(1.0f, 200.0f)] public float propsScale;
         [Range(1.0f, 200.0f)] public float biomeScale;
+        [Range(1.0f, 200.0f)] public float terrainScale;
         [Range(1.0f, 200.0f)] public float hasPropScale = 10f;
 
         [Header("Main configuration")]
@@ -41,57 +40,57 @@ namespace Extinction.Config
             heightMap  = new Noise(heightScale, maxHeight, masterSeed);
             biomeMap   = new Noise(biomeScale, biomes.Count - 1, masterSeed + 1);
             hasPropMap = new Noise(hasPropScale, 100, masterSeed);
-            terrainMap = new Cache<Vector2, TerrainID>(GenerateTerrainIdAt);
+            terrainMap = new Cache<Vector2, TerrainID>(GenerateTerrainID);
             colorMap   = new Cache<Vector2, Color>(GenerateTerrainColor);
         }
 
+        // Getters
+
         public int GetHeight(float x, float z) => heightMap.At(x, z);
 
-        public Biome GetBiome(float x, float z) => biomes[biomeMap.At(x, z)];
+        public int GetBiomeID(float x, float z) => biomeMap.At(x, z);
+
+        public TerrainID GetTerrainID(float x, float z) => terrainMap.At(new Vector2(x, z));
+
+        public Biome GetBiome(float x, float z) => biomes[GetBiomeID(x, z)];
 
         public List<Extinction.Data.Terrain> GetTerrains(float x, float z) => GetBiome(x, z).terrains;
+
+        public Extinction.Data.Terrain GetTerrain(float x, float z) => GetTerrains(x, z)[GetTerrainID(x, z).terrain];
+
+        public Color GetTerrainColor(float x, float z) => colorMap.At(new Vector2(x, z));
 
         public bool HasPropAt(float x, float z) => hasPropMap.At(x, z) > propSparsity;
 
         public GameObject GetProp(float x, float z) => GetBiome(x, z).GetProp(x, z);
 
-        public List<TileID> GetTileIDsAt(float x, float z)
+        public List<TileID> GetTileIDs(float x, float z)
         {
-            TerrainID t0 = GetTerrainIDAt(x + 0, z + 1);
-            TerrainID t1 = GetTerrainIDAt(x + 1, z + 1);
-            TerrainID t2 = GetTerrainIDAt(x + 0, z + 0);
-            TerrainID t3 = GetTerrainIDAt(x + 1, z + 0);
+            TerrainID t0 = GetTerrainID(x + 0, z + 1);
+            TerrainID t1 = GetTerrainID(x + 1, z + 1);
+            TerrainID t2 = GetTerrainID(x + 0, z + 0);
+            TerrainID t3 = GetTerrainID(x + 1, z + 0);
 
             return TileID.CreateList(t0, t1, t2, t3);
         }
 
         // Terrain ID
 
-        public TerrainID GenerateTerrainIdAt(Vector2 position) => GenerateTerrainIdAt(position.x, position.y);
+        public TerrainID GenerateTerrainID(Vector2 position) => GenerateTerrainID(position.x, position.y);
 
-        public TerrainID GenerateTerrainIdAt(float x, float z)
-        {
-            int biomeID = biomeMap.At(x, z);
-            int terrain = 0;
-
-            if (IsFlat(x, z)) terrain = Noise.GetValue(x, z, biomeScale, (GetTerrains(x, z).Count - 1), (masterSeed + 2));
-
-            return new TerrainID(biomeID, terrain);
-        }
-
-        TerrainID GetTerrainIDAt(float x, float z) => terrainMap.At(new Vector2(x, z));
+        public TerrainID GenerateTerrainID(float x, float z) =>
+            new TerrainID(
+                GetBiomeID(x, z),
+                IsFlat(x, z) ?
+                    Noise.GetValue(x, z, terrainScale, (GetTerrains(x, z).Count - 1), (masterSeed + 2)) :
+                    0
+            );
 
         // Color
 
         public Color GenerateTerrainColor(Vector2 position) => GenerateTerrainColor(position.x, position.y);
 
-        public Color GenerateTerrainColor(float x, float z)
-        {
-            TerrainID terrainID = GetTerrainIDAt(x, z);
-            return biomes[terrainID.biome].terrains[terrainID.terrain].color;
-        }
-
-        public Color GetTerrainColor(float x, float z) => colorMap.At(new Vector2(x, z));
+        public Color GenerateTerrainColor(float x, float z) => GetTerrain(x, z).color;
 
         // Other
 

@@ -25,7 +25,7 @@ namespace Extinction.Renderer
                 var rightHeight = config.GetHeight(position.x + x + 1, position.z + z);
 
                 List<TileID> tileIdList = config
-                    .GetTileIDsAt(position.x + x, position.z + z)
+                    .GetTileIDs(position.x + x, position.z + z)
                     .OrderBy(tile => tile.terrainID.biome * 10 + tile.terrainID.terrain).ToList();
 
                 foreach (TileID tileID in tileIdList)

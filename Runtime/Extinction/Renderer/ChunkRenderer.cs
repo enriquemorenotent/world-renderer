@@ -8,23 +8,20 @@ namespace Extinction.Renderer
     [RequireComponent(typeof(MeshRenderer))]
     public class ChunkRenderer : MonoBehaviour
     {
-        #region Components
+        // Fields
+
+        [SerializeField] bool isChunkRendered = false;
+
+        // Components
 
         MeshCollider meshCollider;
         MeshFilter meshFilter;
 
-        #endregion
-
-        #region Attributes
-
-        [SerializeField]
-        bool isChunkRendered = false;
+        // Other
 
         List<GameObject> propsRendered;
 
-        #endregion
-
-        #region Unity methods
+        // Unity methods
 
         void Awake()
         {
@@ -47,7 +44,7 @@ namespace Extinction.Renderer
             if (!isChunkRendered) TryRenderChunk();
         }
 
-        #endregion
+        // Other
 
         void TryRenderChunk()
         {
