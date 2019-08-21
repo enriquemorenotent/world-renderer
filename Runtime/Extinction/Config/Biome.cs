@@ -10,8 +10,8 @@ namespace Extinction.Config
     {
         // Fields
 
-        [Range(1f, 200.0f)] public float propDistributionScale = 10f;
         public string name;
+        [Range(1f, 200.0f)] public float propDistributionScale = 10f;
         public List<Extinction.Data.Terrain> terrains;
         public List<Extinction.Data.WeightedProp> props;
 
