@@ -18,14 +18,18 @@ namespace Extinction.Utils
         {
             TValue value;
 
-            if (cache.TryGetValue(key, out value))
-                return value;
+            lock (cache)
+            {
 
-            if (this.generator == null)
-                throw new ArgumentNullException();
+                if (cache.TryGetValue(key, out value))
+                    return value;
 
-            value = this.generator(key);
-            cache[key] = value;
+                if (this.generator == null)
+                    throw new ArgumentNullException();
+
+                value = this.generator(key);
+                cache[key] = value;
+            }
 
             return value;
         }

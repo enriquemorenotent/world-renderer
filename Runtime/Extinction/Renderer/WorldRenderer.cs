@@ -30,9 +30,11 @@ namespace Extinction.Renderer
 
         DistanceDetector detector;
 
+        // Other
+
         DataPreloader dataPreloader;
 
-        // Other
+        public MinimapDataPreloader minimapDataPreloader;
 
         public Dictionary<Vector3, GameObject> renderedChunks = new Dictionary<Vector3, GameObject>();
 
@@ -55,6 +57,7 @@ namespace Extinction.Renderer
             singleton = this;
             config.Setup();
             dataPreloader = new DataPreloader(radius + cacheRadius, chunkSize, Vector3.zero);
+            minimapDataPreloader = new MinimapDataPreloader();
             UpdateRenderPoint(Vector3.zero);
 
             detector = GetComponent<DistanceDetector>();
@@ -122,8 +125,9 @@ namespace Extinction.Renderer
         {
             Vector3 drawPoint = ClosestRenderPoint(point);
             transform.position = drawPoint;
-            onRenderPointUpdated.Invoke();
             dataPreloader.LoadAround(transform.position);
+            minimapDataPreloader.LookAround(transform.position);
+            onRenderPointUpdated.Invoke();
             DeleteDistantChunks();
 
             for (int z = -radius; z <= radius; z++)
