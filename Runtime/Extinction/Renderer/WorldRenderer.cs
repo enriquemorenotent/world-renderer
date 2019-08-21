@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using DigitalRuby.Threading;
 using Extinction.Config;
 using Extinction.Utils;
 
