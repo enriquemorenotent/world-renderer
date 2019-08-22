@@ -5,8 +5,8 @@ using Extinction.Utils;
 
 namespace Extinction.Config
 {
-    [System.Serializable]
-    public class Biome
+    [CreateAssetMenu(fileName = "Biome", menuName = "Extinction/Config/Biome", order = 2)]
+    public class Biome : ScriptableObject
     {
         // Fields
 

@@ -6,6 +6,6 @@ namespace Extinction.Data
     public class Terrain
     {
         public int row;
-        public Color color;
+        public Color color = Color.red;
     }
 }
