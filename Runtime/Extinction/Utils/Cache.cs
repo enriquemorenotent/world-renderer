@@ -33,5 +33,10 @@ namespace Extinction.Utils
 
             return value;
         }
+
+        public void CleanUp()
+        {
+            // TODO
+        }
     }
 }
