@@ -9,9 +9,9 @@ namespace Extinction.Utils
 
         private readonly Func<TKey, TValue> generator;
 
-        public Cache(System.Func<TKey, TValue> f)
+        public Cache(Func<TKey, TValue> _generator)
         {
-            this.generator = f;
+            generator = _generator;
         }
 
         public TValue At(TKey key)
@@ -24,10 +24,10 @@ namespace Extinction.Utils
                 if (cache.TryGetValue(key, out value))
                     return value;
 
-                if (this.generator == null)
+                if (generator == null)
                     throw new ArgumentNullException();
 
-                value = this.generator(key);
+                value = generator(key);
                 cache[key] = value;
             }
 
