@@ -47,7 +47,7 @@ namespace Extinction.Renderer
 
         public static World Config() => singleton.config;
 
-        public static Dictionary<Vector3, ChunkData> GetChunkData() => singleton.dataPreloader.cache;
+        public static Cache<Vector3, ChunkData> GetChunkData() => singleton.dataPreloader.chunkDataCache;
 
         // Unity methods
 
@@ -125,7 +125,7 @@ namespace Extinction.Renderer
             Vector3 drawPoint = ClosestRenderPoint(point);
             transform.position = drawPoint;
             dataPreloader.LoadAround(transform.position);
-            minimapDataPreloader.LookAround(transform.position);
+            // minimapDataPreloader.LookAround(transform.position);
             onRenderPointUpdated.Invoke();
             DeleteDistantChunks();
 

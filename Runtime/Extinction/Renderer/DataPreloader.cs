@@ -2,23 +2,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using Extinction.Utils;
 
 namespace Extinction.Renderer
 {
     public class DataPreloader
     {
-        public Dictionary<Vector3, ChunkData> cache = new Dictionary<Vector3, ChunkData>();
+        // Attributes
+
+        public Cache<Vector3, ChunkData> chunkDataCache;
 
         int loadRadius;
         int chunkSize;
 
         Vector3 dataPoint;
 
+        // Constructor
+
         public DataPreloader(int _loadRadius, int _chunkSize, Vector3 position)
         {
             chunkSize = _chunkSize;
             loadRadius = _loadRadius;
+            chunkDataCache = new Cache<Vector3, ChunkData>(LoadChunkData, CleanChunkData);
         }
+
+        // Methods
+
+        public ChunkData LoadChunkData(Vector3 position) => ChunkData.LoadDataAt(position, chunkSize);
 
         public void LoadAround(Vector3 position)
         {
@@ -28,21 +38,18 @@ namespace Extinction.Renderer
 
         void UpdateData()
         {
-            lock (cache)
-            {
-                RemoveUselessData();
-                CollectData();
-            }
+            chunkDataCache.CleanUp();
+            CollectData();
+            Debug.Log(chunkDataCache.Count);
         }
 
-        void RemoveUselessData()
+        bool CleanChunkData(Vector3 position)
         {
-            var toRemove = cache.Where(pair =>
-                Mathf.Abs(pair.Key.x - dataPoint.x) > loadRadius * (chunkSize * 2 + 1) ||
-                Mathf.Abs(pair.Key.z - dataPoint.z) > loadRadius * (chunkSize * 2 + 1)
-            ).ToList();
+            bool toDelete =
+                Mathf.Abs(position.x - dataPoint.x) > loadRadius * (chunkSize * 2 + 1) ||
+                Mathf.Abs(position.z - dataPoint.z) > loadRadius * (chunkSize * 2 + 1);
 
-            foreach (var pair in toRemove) cache.Remove(pair.Key);
+            return toDelete;
         }
 
         void CollectData()
@@ -54,9 +61,7 @@ namespace Extinction.Renderer
             for (int x = -loadRadius; x <= loadRadius; x++)
             {
                 position = new Vector3(dataPoint.x + x * diameter, 0, dataPoint.z + z * diameter);
-
-                if (!cache.ContainsKey(position))
-                    cache.Add(position, ChunkData.LoadDataAt(position, chunkSize));
+                chunkDataCache.At(position);
             }
         }
     }

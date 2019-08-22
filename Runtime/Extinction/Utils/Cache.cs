@@ -1,34 +1,50 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Extinction.Utils
 {
-    public class Cache<TKey, TValue>
+    public interface ICache {}
+
+    public class Cache<TKey, TValue> : ICache
     {
-        private readonly Dictionary<TKey, TValue> cache = new Dictionary<TKey, TValue>();
+        // Attributes
 
-        private readonly Func<TKey, TValue> generator;
+        Dictionary<TKey, TValue> data = new Dictionary<TKey, TValue>();
 
-        public Cache(Func<TKey, TValue> _generator)
+        Func<TKey, TValue> generator;
+
+        Func<TKey, bool> cleanUp;
+
+        // Properties
+
+        public int Count { get { return data.Count; } }
+
+        // Constructor
+
+        public Cache(Func<TKey, TValue> _generator, Func<TKey, bool> _cleanup = null)
         {
             generator = _generator;
+            cleanUp = _cleanup;
         }
+
+        // Methods
+
+        public bool TryGetValue(TKey key, out TValue value) => data.TryGetValue(key, out value);
 
         public TValue At(TKey key)
         {
+            if (generator == null) throw new ArgumentNullException();
+
             TValue value;
 
-            lock (cache)
-            {
+            lock (data) {
 
-                if (cache.TryGetValue(key, out value))
-                    return value;
-
-                if (generator == null)
-                    throw new ArgumentNullException();
-
-                value = generator(key);
-                cache[key] = value;
+                if (!data.TryGetValue(key, out value))
+                {
+                    value = generator(key);
+                    data[key] = value;
+                }
             }
 
             return value;
@@ -36,7 +52,19 @@ namespace Extinction.Utils
 
         public void CleanUp()
         {
-            // TODO
+            lock (data)
+            {
+                if (cleanUp == null) return;
+
+                var toRemove = data.Where(pair => cleanUp(pair.Key))
+                    .Select(pair => pair.Key)
+                    .ToList();
+
+                foreach (var key in toRemove)
+                {
+                    data.Remove(key);
+                }
+            }
         }
     }
 }
