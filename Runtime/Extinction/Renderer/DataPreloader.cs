@@ -18,7 +18,6 @@ namespace Extinction.Renderer
         {
             chunkSize = _chunkSize;
             loadRadius = _loadRadius;
-            LoadAround(position);
         }
 
         public void LoadAround(Vector3 position)
