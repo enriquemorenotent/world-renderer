@@ -13,11 +13,11 @@ namespace Extinction.Config
         public Cache<Vector2, Color> colorMap;
 
         [Header("Noise scale")]
-        [Range(1.0f, 200.0f)] public float heightScale;
-        [Range(1.0f, 200.0f)] public float propsScale;
-        [Range(1.0f, 200.0f)] public float biomeScale;
-        [Range(1.0f, 200.0f)] public float terrainScale;
-        [Range(1.0f, 200.0f)] public float hasPropScale = 10f;
+        public float heightScale;
+        public float propsScale;
+        public float biomeScale;
+        public float terrainScale;
+        public float hasPropScale = 10f;
 
         [Header("Main configuration")]
         [Range(0, 9999)] public int masterSeed;
