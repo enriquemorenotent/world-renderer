@@ -1,5 +1,5 @@
 {
-  "name": "com.tamagames.extinction.word-renderer",
+  "name": "com.tamagames.extinction.world-renderer",
   "version": "1.0.4",
   "displayName": "Extinction - World renderer",
   "description": "World renderer for Extinction",
