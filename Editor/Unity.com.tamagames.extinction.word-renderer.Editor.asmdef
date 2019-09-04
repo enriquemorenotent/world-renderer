@@ -1,5 +1,6 @@
 {
-    "name": "Unity.com.tamagames.extinction.world-renderer",
+    "name": "Unity.com.tamagames.extinction.world-renderer.Editor",
+    "references": ["Unity.com.tamagames.extinction.world-renderer.Runtime"],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
