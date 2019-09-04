@@ -52,7 +52,8 @@ namespace Extinction.Renderer
             if (WorldRenderer.GetChunkData().TryGetValue(transform.position, out chunkData))
             {
                 RenderMesh(chunkData.meshData);
-                RenderProps(chunkData);
+                if (WorldRenderer.singleton.renderProps)
+                    RenderProps(chunkData);
 
                 isChunkRendered = true;
             }

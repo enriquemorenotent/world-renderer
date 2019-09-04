@@ -25,6 +25,8 @@ namespace Extinction.Renderer
 
         [Range(300, 2000)] public int visitedChunkBufferRange = 500;
 
+        public bool renderProps = true;
+
         // Components
 
         DistanceDetector detector;
@@ -138,7 +140,7 @@ namespace Extinction.Renderer
         // Events
         //
 
-		static UnityEvent onRenderPointUpdated = new UnityEvent();
+        static UnityEvent onRenderPointUpdated = new UnityEvent();
 
         public void OnRenderPointUpdated(UnityAction action)
         {
