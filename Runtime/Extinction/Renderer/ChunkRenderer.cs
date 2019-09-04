@@ -76,7 +76,7 @@ namespace Extinction.Renderer
         {
             foreach (PropData data in chunkData.propDataList)
             {
-                if (WorldRenderer.singleton.renderPropsBelow < data.position.y)
+                if (WorldRenderer.singleton.renderPropsAbove < data.position.y)
                 {
                     GameObject instance = Instantiate(data.prefab, data.position, Quaternion.identity);
                     instance.transform.SetParent(this.transform);
