@@ -52,8 +52,7 @@ namespace Extinction.Renderer
             if (WorldRenderer.GetChunkData().TryGetValue(transform.position, out chunkData))
             {
                 RenderMesh(chunkData.meshData);
-                if (WorldRenderer.singleton.renderProps)
-                    RenderProps(chunkData);
+                RenderProps(chunkData);
 
                 isChunkRendered = true;
             }
@@ -77,9 +76,12 @@ namespace Extinction.Renderer
         {
             foreach (PropData data in chunkData.propDataList)
             {
-                GameObject instance = Instantiate(data.prefab, data.position, Quaternion.identity);
-                instance.transform.SetParent(this.transform);
-                this.propsRendered.Add(instance);
+                if (WorldRenderer.singleton.renderPropsBelow < data.position.y)
+                {
+                    GameObject instance = Instantiate(data.prefab, data.position, Quaternion.identity);
+                    instance.transform.SetParent(this.transform);
+                    this.propsRendered.Add(instance);
+                }
             }
         }
 

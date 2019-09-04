@@ -25,7 +25,7 @@ namespace Extinction.Renderer
 
         [Range(300, 2000)] public int visitedChunkBufferRange = 500;
 
-        public bool renderProps = true;
+        public int renderPropsBelow = 5;
 
         // Components
 
