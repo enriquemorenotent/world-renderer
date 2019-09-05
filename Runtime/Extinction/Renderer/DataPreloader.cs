@@ -40,7 +40,6 @@ namespace Extinction.Renderer
         {
             chunkDataCache.CleanUp();
             CollectData();
-            Debug.Log(chunkDataCache.Count);
         }
 
         bool CleanChunkData(Vector3 position)
@@ -58,11 +57,11 @@ namespace Extinction.Renderer
             Vector3 position;
 
             for (int z = -loadRadius; z <= loadRadius; z++)
-            for (int x = -loadRadius; x <= loadRadius; x++)
-            {
-                position = new Vector3(dataPoint.x + x * diameter, 0, dataPoint.z + z * diameter);
-                chunkDataCache.At(position);
-            }
+                for (int x = -loadRadius; x <= loadRadius; x++)
+                {
+                    position = new Vector3(dataPoint.x + x * diameter, 0, dataPoint.z + z * diameter);
+                    chunkDataCache.At(position);
+                }
         }
     }
 }
