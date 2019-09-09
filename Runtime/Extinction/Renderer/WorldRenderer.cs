@@ -142,7 +142,7 @@ namespace Extinction.Renderer
 
         static UnityEvent onRenderPointUpdated = new UnityEvent();
 
-        public void OnRenderPointUpdated(UnityAction action)
+        public static void OnRenderPointUpdated(UnityAction action)
         {
             onRenderPointUpdated.AddListener(action);
         }
