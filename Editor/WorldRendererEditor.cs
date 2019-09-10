@@ -8,7 +8,7 @@ namespace Extinction.Renderer
     [CustomEditor(typeof(WorldRenderer))]
     public class WorldRendererEditor : Editor
     {
-        private SerializedProperty config, chunkPool, radius, chunkSize, cacheRadius, visitedChunkBufferRange, renderPropsAbove;
+        private SerializedProperty config, chunkPool, radius, chunkSize, cacheRadius, visitedChunkBufferRange, renderProps;
 
         public void OnEnable()
         {
@@ -18,7 +18,8 @@ namespace Extinction.Renderer
             chunkSize = serializedObject.FindProperty("chunkSize");
             cacheRadius = serializedObject.FindProperty("cacheRadius");
             visitedChunkBufferRange = serializedObject.FindProperty("visitedChunkBufferRange");
-            renderPropsAbove = serializedObject.FindProperty("renderPropsAbove");
+            renderProps = serializedObject.FindProperty("renderProps");
+
 
         }
 
@@ -56,7 +57,7 @@ namespace Extinction.Renderer
 
             EditorGUILayout.EndVertical();
 
-            EditorGUILayout.PropertyField(renderPropsAbove);
+            EditorGUILayout.PropertyField(renderProps);
 
             serializedObject.ApplyModifiedProperties();
         }

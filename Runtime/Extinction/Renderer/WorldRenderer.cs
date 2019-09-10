@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Events;
 using Extinction.Config;
 using Extinction.Utils;
@@ -9,6 +10,7 @@ namespace Extinction.Renderer
 {
     [AddComponentMenu("Extinction/World renderer")]
     [RequireComponent(typeof(DistanceDetector))]
+    [RequireComponent(typeof(NavMeshSurface))]
     public class WorldRenderer : MonoBehaviour
     {
         // Fields
@@ -25,11 +27,12 @@ namespace Extinction.Renderer
 
         [Range(300, 2000)] public int visitedChunkBufferRange = 500;
 
-        public int renderPropsAbove = 5;
+        public bool renderProps = true;
 
         // Components
 
         DistanceDetector detector;
+        NavMeshSurface navMeshSurface;
 
         // Other
 
@@ -43,6 +46,8 @@ namespace Extinction.Renderer
 
         public int ChunkDiameter { get { return chunkSize * 2 + 1; } }
 
+        bool navMeshDirty = false;
+
         // Singleton
 
         public static WorldRenderer singleton { get; private set; }
@@ -50,6 +55,8 @@ namespace Extinction.Renderer
         public static World Config() => singleton.config;
 
         public static Cache<Vector3, ChunkData> GetChunkData() => singleton.dataPreloader.chunkDataCache;
+
+
 
         // Unity methods
 
@@ -62,12 +69,20 @@ namespace Extinction.Renderer
             UpdateRenderPoint(Vector3.zero);
 
             detector = GetComponent<DistanceDetector>();
+            navMeshSurface = GetComponent<NavMeshSurface>();
         }
 
         void Update()
         {
             if (detector.IsTargetTooFar())
                 UpdateRenderPoint(detector.TargetPosition());
+
+            if (navMeshDirty && AreAllChunksRendered())
+            {
+                Debug.Log("Baking");
+                navMeshSurface.BuildNavMesh();
+                navMeshDirty = false;
+            }
         }
 
         // Helpers
@@ -77,6 +92,11 @@ namespace Extinction.Renderer
             0,
             (int)(position.z / ChunkDiameter) * ChunkDiameter
         );
+
+        bool AreAllChunksRendered()
+        {
+            return renderedChunks.All(pair => pair.Value.GetComponent<ChunkRenderer>().IsRendered());
+        }
 
         //
         // Chunk control
@@ -134,6 +154,8 @@ namespace Extinction.Renderer
             for (int z = -radius; z <= radius; z++)
                 for (int x = -radius; x <= radius; x++)
                     InstantiateChunk(x, z);
+
+            navMeshDirty = true;
         }
 
         //

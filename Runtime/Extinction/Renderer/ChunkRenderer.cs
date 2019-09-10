@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 namespace Extinction.Renderer
 {
@@ -27,7 +28,7 @@ namespace Extinction.Renderer
         {
             meshCollider = GetComponent<MeshCollider>();
             meshFilter = GetComponent<MeshFilter>();
-            this.propsRendered = new List<GameObject>();
+            propsRendered = new List<GameObject>();
         }
 
         void OnEnable()
@@ -46,13 +47,16 @@ namespace Extinction.Renderer
 
         // Other
 
+        public bool IsRendered() => isChunkRendered;
+
         void TryRenderChunk()
         {
             ChunkData chunkData;
             if (WorldRenderer.GetChunkData().TryGetValue(transform.position, out chunkData))
             {
                 RenderMesh(chunkData.meshData);
-                RenderProps(chunkData);
+                if (WorldRenderer.singleton.renderProps)
+                    RenderProps(chunkData);
 
                 isChunkRendered = true;
             }
@@ -76,12 +80,9 @@ namespace Extinction.Renderer
         {
             foreach (PropData data in chunkData.propDataList)
             {
-                if (WorldRenderer.singleton.renderPropsAbove < data.position.y)
-                {
-                    GameObject instance = Instantiate(data.prefab, data.position, Quaternion.identity);
-                    instance.transform.SetParent(this.transform);
-                    this.propsRendered.Add(instance);
-                }
+                GameObject instance = Instantiate(data.prefab, data.position, Quaternion.identity);
+                instance.transform.SetParent(this.transform);
+                this.propsRendered.Add(instance);
             }
         }
 
