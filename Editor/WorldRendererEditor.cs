@@ -5,10 +5,10 @@ using Extinction.Utils;
 
 namespace Extinction.Renderer
 {
-    [CustomEditor(typeof(WorldRenderer))]
+    // [CustomEditor(typeof(WorldRenderer))]
     public class WorldRendererEditor : Editor
     {
-        private SerializedProperty config, chunkPool, radius, chunkSize, cacheRadius, visitedChunkBufferRange, renderProps;
+        private SerializedProperty config, chunkPool, radius, chunkSize, cacheRadius, visitedChunkBufferRange, renderProps, navMeshRenderer;
 
         public void OnEnable()
         {
@@ -19,8 +19,7 @@ namespace Extinction.Renderer
             cacheRadius = serializedObject.FindProperty("cacheRadius");
             visitedChunkBufferRange = serializedObject.FindProperty("visitedChunkBufferRange");
             renderProps = serializedObject.FindProperty("renderProps");
-
-
+            navMeshRenderer = serializedObject.FindProperty("navMeshRenderer");
         }
 
         public override void OnInspectorGUI()
@@ -58,6 +57,7 @@ namespace Extinction.Renderer
             EditorGUILayout.EndVertical();
 
             EditorGUILayout.PropertyField(renderProps);
+            EditorGUILayout.PropertyField(navMeshRenderer);
 
             serializedObject.ApplyModifiedProperties();
         }

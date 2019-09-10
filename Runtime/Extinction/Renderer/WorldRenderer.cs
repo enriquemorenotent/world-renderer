@@ -10,7 +10,6 @@ namespace Extinction.Renderer
 {
     [AddComponentMenu("Extinction/World renderer")]
     [RequireComponent(typeof(DistanceDetector))]
-    [RequireComponent(typeof(NavMeshSurface))]
     public class WorldRenderer : MonoBehaviour
     {
         // Fields
@@ -32,7 +31,7 @@ namespace Extinction.Renderer
         // Components
 
         DistanceDetector detector;
-        NavMeshSurface navMeshSurface;
+        [SerializeField] NavMeshSurface navMeshSurface;
 
         // Other
 
@@ -46,7 +45,7 @@ namespace Extinction.Renderer
 
         public int ChunkDiameter { get { return chunkSize * 2 + 1; } }
 
-        bool navMeshDirty = false;
+        bool navMeshDirty;
 
         // Singleton
 
@@ -55,8 +54,6 @@ namespace Extinction.Renderer
         public static World Config() => singleton.config;
 
         public static Cache<Vector3, ChunkData> GetChunkData() => singleton.dataPreloader.chunkDataCache;
-
-
 
         // Unity methods
 
@@ -69,7 +66,6 @@ namespace Extinction.Renderer
             UpdateRenderPoint(Vector3.zero);
 
             detector = GetComponent<DistanceDetector>();
-            navMeshSurface = GetComponent<NavMeshSurface>();
         }
 
         void Update()
