@@ -76,40 +76,9 @@ namespace Extinction.Renderer
             if (navMeshDirty && AreAllChunksRendered())
             {
                 Debug.Log("Baking");
-                StartCoroutine(BuildNavmesh());
+                navMeshSurface.BuildNavMesh();
+                navMeshDirty = false;
             }
-        }
-
-
-        // called by startcoroutine whenever you want to build the navmesh
-        System.Collections.IEnumerator BuildNavmesh()
-        {
-            // get the data for the surface
-            var data = InitializeBakeData(navMeshSurface);
-
-            // start building the navmesh
-            var async = navMeshSurface.UpdateNavMesh(data);
-
-            // wait until the navmesh has finished baking
-            yield return async;
-
-            Debug.Log("finished");
-
-            // you need to save the baked data back into the navMeshSurface
-            navMeshSurface.navMeshData = data;
-
-            // call AddData() to finalize it
-            navMeshSurface.AddData();
-            navMeshDirty = false;
-        }
-
-        // creates the navmesh data
-        static NavMeshData InitializeBakeData(NavMeshSurface surface)
-        {
-            var emptySources = new List<NavMeshBuildSource>();
-            var emptyBounds = new Bounds();
-
-            return UnityEngine.AI.NavMeshBuilder.BuildNavMeshData(surface.GetBuildSettings(), emptySources, emptyBounds, surface.transform.position, surface.transform.rotation);
         }
 
         // Helpers
