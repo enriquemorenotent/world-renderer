@@ -75,8 +75,7 @@ namespace Extinction.Renderer
 
             if (navMeshDirty && AreAllChunksRendered())
             {
-                Debug.Log("Baking");
-                navMeshSurface.BuildNavMesh();
+                navMeshSurface.BuildNavMeshAsync();
                 navMeshDirty = false;
             }
         }

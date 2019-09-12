@@ -2,6 +2,25 @@ using System.Collections.Generic;
 
 namespace UnityEngine.AI
 {
+    public static class NavMeshSurfaceExtensions
+    {
+        public static AsyncOperation BuildNavMeshAsync(this NavMeshSurface surface)
+        {
+            surface.RemoveData();
+            surface.navMeshData = new NavMeshData(surface.agentTypeID)
+            {
+                name = surface.gameObject.name,
+                position = surface.transform.position,
+                rotation = surface.transform.rotation
+            };
+
+            if (surface.isActiveAndEnabled)
+                surface.AddData();
+
+            return surface.UpdateNavMesh(surface.navMeshData);
+        }
+    }
+
     public enum CollectObjects
     {
         All = 0,
@@ -144,7 +163,6 @@ namespace UnityEngine.AI
 
         public void BuildNavMesh()
         {
-            Debug.Log("Building navmesh");
             var sources = CollectSources();
 
             // Use unscaled bounds - this differs in behaviour from e.g. collider components.
@@ -181,6 +199,8 @@ namespace UnityEngine.AI
             return NavMeshBuilder.UpdateNavMeshDataAsync(data, GetBuildSettings(), sources, sourcesBounds);
         }
 
+        #region Register
+
         static void Register(NavMeshSurface surface)
         {
             if (s_NavMeshSurfaces.Count == 0)
@@ -197,6 +217,8 @@ namespace UnityEngine.AI
             if (s_NavMeshSurfaces.Count == 0)
                 NavMesh.onPreUpdate -= UpdateActive;
         }
+
+        #endregion
 
         static void UpdateActive()
         {
