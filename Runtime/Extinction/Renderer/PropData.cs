@@ -15,21 +15,22 @@ namespace Extinction.Renderer
             World config = WorldRenderer.Config();
 
             for (float z = -chunkSize - 0.5f; z <= chunkSize - 0.5f; z++)
-            for (float x = -chunkSize - 0.5f; x <= chunkSize - 0.5f; x++)
-            {
-                Vector3 position = chunkPosition + new Vector3(x, 20, z);
-
-                if (config.HasPropAt(position.x, position.z))
+                for (float x = -chunkSize - 0.5f; x <= chunkSize - 0.5f; x++)
                 {
-                    PropData propData = new PropData();
-                    propData.position = position;
-                    propData.position.y = config.GetHeight(position.x, position.z) + config.propVerticalOffset;
-                    propData.position.x += 0.5f;
-                    propData.position.z += 0.5f;
-                    propData.prefab = config.GetProp(position.x, position.z);
-                    dataList.Add(propData);
+                    Vector3 position = chunkPosition + new Vector3(x, 20, z);
+
+                    if (config.HasPropAt(position.x, position.z))
+                    {
+                        PropData propData = new PropData();
+                        propData.position = position;
+                        propData.position.y = config.GetHeight(position.x, position.z) + config.propVerticalOffset;
+                        propData.position.x += 0.5f;
+                        // The Random.range is added because to avoid Z-fighting, if 2 big props appear next to each other
+                        propData.position.z += 0.5f + Random.Range(-0.1f, 0.1f);
+                        propData.prefab = config.GetProp(position.x, position.z);
+                        dataList.Add(propData);
+                    }
                 }
-            }
 
             return dataList;
         }
