@@ -1,6 +1,8 @@
 {
     "name": "Unity.com.tamagames.extinction.world-renderer.Runtime",
-    "optionalUnityReferences": [],
+    "references": [
+        "com.tamagames.navmesh-components.Runtime"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
