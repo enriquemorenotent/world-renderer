@@ -14,6 +14,8 @@ namespace Extinction.Renderer
             List<PropData> dataList = new List<PropData>();
             World config = WorldRenderer.Config();
 
+            System.Random random = new System.Random();
+
             for (float z = -chunkSize - 0.5f; z <= chunkSize - 0.5f; z++)
                 for (float x = -chunkSize - 0.5f; x <= chunkSize - 0.5f; x++)
                 {
@@ -25,8 +27,7 @@ namespace Extinction.Renderer
                         propData.position = position;
                         propData.position.y = config.GetHeight(position.x, position.z) + config.propVerticalOffset;
                         propData.position.x += 0.5f;
-                        // The Random.range is added because to avoid Z-fighting, if 2 big props appear next to each other
-                        propData.position.z += 0.5f + Random.Range(-0.1f, 0.1f);
+                        propData.position.z += 0.5f + (float)random.Next(0, 100) / 1000;
                         propData.prefab = config.GetProp(position.x, position.z);
                         dataList.Add(propData);
                     }
