@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using UnityEngine;
 using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace Extinction.Renderer
 {
@@ -89,7 +90,7 @@ namespace Extinction.Renderer
         public void ToPool()
         {
             foreach (GameObject prop in this.propsRendered) Destroy(prop);
-            WorldRenderer.singleton.chunkPool.AddToPool(this.gameObject);
+            WorldRenderer.singleton.chunkPool.Return(this.gameObject);
         }
     }
 }

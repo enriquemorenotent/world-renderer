@@ -5,65 +5,43 @@ namespace Extinction.Utils
 {
     public class Pool : MonoBehaviour
     {
-        #region Attributes
-
         [SerializeField]
         GameObject prefab;
 
         Queue<GameObject> queue = new Queue<GameObject>();
 
-        #endregion
-
-        #region Stats
-
         public int instancesCreated = 0;
         public int instancesDelivered = 0;
         public int instancesReturned = 0;
 
-        #endregion
-
-        #region Unity methods
-
-        void Start()
-        {
-            GrowPool();
-        }
-
-        #endregion
-
-        #region Mehtods
+        void Start() => GrowPool();
 
         void GrowPool()
         {
             for (int i = 0; i < 10; i++)
             {
-                var instance = Instantiate(this.prefab);
-                instance.transform.SetParent(this.transform);
-                this.AddToPool(instance);
+                var instance = Instantiate(prefab);
+                instance.transform.SetParent(transform);
+                Return(instance);
             }
             instancesCreated += 10;
         }
 
-        public void AddToPool(GameObject instance)
+        public void Return(GameObject instance)
         {
             instance.SetActive(false);
-            this.queue.Enqueue(instance);
+            queue.Enqueue(instance);
             instancesReturned++;
         }
 
-        public GameObject GetFromPool()
+        public GameObject Deliver()
         {
-            if (queue.Count == 0)
-            {
-                this.GrowPool();
-            }
+            if (queue.Count == 0) GrowPool();
 
             instancesDelivered++;
             GameObject instance = queue.Dequeue();
             instance.SetActive(true);
             return instance;
         }
-
-        #endregion
     }
 }

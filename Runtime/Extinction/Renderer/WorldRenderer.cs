@@ -15,6 +15,7 @@ namespace Extinction.Renderer
         // Fields
 
         [SerializeField] public Pool chunkPool;
+        [SerializeField] public Pool navMeshLinkPool;
 
         [SerializeField] public World config;
 
@@ -75,9 +76,40 @@ namespace Extinction.Renderer
 
             if (navMeshDirty && AreAllChunksRendered())
             {
+                SetNavMeshLinks();
                 navMeshSurface.BuildNavMeshAsync();
                 navMeshDirty = false;
             }
+        }
+
+        void SetNavMeshLinks()
+        {
+            var chunkDiameter = chunkSize * 2 + 1;
+            var mapRadius = radius * ChunkDiameter + chunkSize + 1;
+
+            for (int z = -mapRadius + 1; z < mapRadius; z++)
+                for (int x = -mapRadius; x < mapRadius; x++)
+                {
+                    if (config.GetHeight(x, z) != config.GetHeight(x + 1, z))
+                    {
+                        GameObject linkGameObject = navMeshLinkPool.Deliver();
+                        linkGameObject.name = $"NavMeshLink - ({x}, {z})";
+
+                        NavMeshLink link = linkGameObject.GetComponent<NavMeshLink>();
+                        link.startPoint = new Vector3(x, config.GetHeight(x, z), z);
+                        link.endPoint = new Vector3(x + 1, config.GetHeight(x + 1, z), z);
+                    }
+
+                    if (config.GetHeight(x, z) != config.GetHeight(x, z + 1))
+                    {
+                        GameObject linkGameObject = navMeshLinkPool.Deliver();
+                        linkGameObject.name = $"NavMeshLink - ({x}, {z})";
+
+                        NavMeshLink link = linkGameObject.GetComponent<NavMeshLink>();
+                        link.startPoint = new Vector3(x, config.GetHeight(x, z), z);
+                        link.endPoint = new Vector3(x, config.GetHeight(x, z + 1), z + 1);
+                    }
+                }
         }
 
         // Helpers
@@ -127,7 +159,7 @@ namespace Extinction.Renderer
 
             if (isChunkRenderedAt(position)) return;
 
-            GameObject chunkInstance = chunkPool.GetFromPool();
+            GameObject chunkInstance = chunkPool.Deliver();
             chunkInstance.transform.position = position;
             chunkInstance.name = string.Format("Chunk {0}, {1}", position.x, position.z);
 
