@@ -87,8 +87,8 @@ namespace Extinction.Renderer
             var chunkDiameter = chunkSize * 2 + 1;
             var mapRadius = radius * ChunkDiameter + chunkSize + 1;
 
-            for (float z = -10 - 0.5f; z <= 10 + 0.5f; z++)
-                for (float x = -10 - 0.5f; x <= 10 + 0.5f; x++)
+            for (float z = -mapRadius + 0.5f; z < mapRadius - 0.5f; z++)
+                for (float x = -mapRadius + 0.5f; x < mapRadius - 0.5f; x++)
                 {
                     if (config.GetHeight(x, z) != config.GetHeight(x + 1, z))
                     {
