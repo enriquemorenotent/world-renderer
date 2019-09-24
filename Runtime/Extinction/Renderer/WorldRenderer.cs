@@ -87,8 +87,8 @@ namespace Extinction.Renderer
             var chunkDiameter = chunkSize * 2 + 1;
             var mapRadius = radius * ChunkDiameter + chunkSize + 1;
 
-            for (int z = -mapRadius + 1; z < mapRadius; z++)
-                for (int x = -mapRadius; x < mapRadius; x++)
+            for (float z = -10 - 0.5f; z <= 10 + 0.5f; z++)
+                for (float x = -10 - 0.5f; x <= 10 + 0.5f; x++)
                 {
                     if (config.GetHeight(x, z) != config.GetHeight(x + 1, z))
                     {
@@ -96,8 +96,8 @@ namespace Extinction.Renderer
                         linkGameObject.name = $"NavMeshLink - ({x}, {z})";
 
                         NavMeshLink link = linkGameObject.GetComponent<NavMeshLink>();
-                        link.startPoint = new Vector3(x, config.GetHeight(x, z), z);
-                        link.endPoint = new Vector3(x + 1, config.GetHeight(x + 1, z), z);
+                        link.startPoint = new Vector3(x + 0.5f, config.GetHeight(x, z), z + 0.5f);
+                        link.endPoint = new Vector3(x + 1.5f, config.GetHeight(x + 1, z), z + 0.5f);
                     }
 
                     if (config.GetHeight(x, z) != config.GetHeight(x, z + 1))
@@ -106,8 +106,8 @@ namespace Extinction.Renderer
                         linkGameObject.name = $"NavMeshLink - ({x}, {z})";
 
                         NavMeshLink link = linkGameObject.GetComponent<NavMeshLink>();
-                        link.startPoint = new Vector3(x, config.GetHeight(x, z), z);
-                        link.endPoint = new Vector3(x, config.GetHeight(x, z + 1), z + 1);
+                        link.startPoint = new Vector3(x + 0.5f, config.GetHeight(x, z), z + 0.5f);
+                        link.endPoint = new Vector3(x + 0.5f, config.GetHeight(x, z + 1), z + 1.5f);
                     }
                 }
         }
