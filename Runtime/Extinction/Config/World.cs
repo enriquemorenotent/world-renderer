@@ -25,13 +25,12 @@ namespace Extinction.Config
 		[Range(0, 100)] public int propSparsity = 70;
 		[Range(3, 15)] public int maxHeight = 20;
 		public float propVerticalOffset = 0.5f;
+		public int propsOnlyAboveHeight = 2;
 
 
 		[Header("Textures")]
 		public Sprite sprite;
 		public int columns, rows;
-
-		public int propsOnlyAboveHeight = 2;
 
 		[Header("Ecosystem")]
 		public List<Biome> biomes;
