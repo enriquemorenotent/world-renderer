@@ -27,8 +27,6 @@ namespace Extinction.Renderer
 
         [Range(300, 2000)] public int visitedChunkBufferRange = 500;
 
-        public bool renderProps = true;
-
         // Components
 
         DistanceDetector detector;
@@ -56,6 +54,10 @@ namespace Extinction.Renderer
 
         public static Cache<Vector3, ChunkData> GetChunkData() => singleton.dataPreloader.chunkDataCache;
 
+        [Header("Flags")]
+        public bool renderProps = true;
+        public bool renderNavMesh = true;
+
         // Unity methods
 
         void Awake()
@@ -74,7 +76,7 @@ namespace Extinction.Renderer
             if (detector.IsTargetTooFar())
                 UpdateRenderPoint(detector.TargetPosition());
 
-            if (navMeshDirty && AreAllChunksRendered())
+            if (renderNavMesh && navMeshDirty && AreAllChunksRendered())
             {
                 SetNavMeshLinks();
                 navMeshSurface.BuildNavMeshAsync();
