@@ -57,6 +57,7 @@ namespace Extinction.Renderer
         [Header("Flags")]
         public bool renderProps = true;
         public bool renderNavMesh = true;
+        public bool renderNavMeshLinks = true;
 
         // Unity methods
 
@@ -78,7 +79,7 @@ namespace Extinction.Renderer
 
             if (renderNavMesh && navMeshDirty && AreAllChunksRendered())
             {
-                SetNavMeshLinks();
+                if (renderNavMeshLinks) SetNavMeshLinks();
                 navMeshSurface.BuildNavMeshAsync();
                 navMeshDirty = false;
             }
