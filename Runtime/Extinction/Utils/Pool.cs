@@ -14,13 +14,23 @@ namespace Extinction.Utils
         public int instancesDelivered = 0;
         public int instancesReturned = 0;
 
-        void Start() => GrowPool();
+        void Start() 
+        {
+            if (prefab != null) GrowPool();
+        }
+
+        public void SetPrefab(GameObject _prefab)
+        {
+            prefab = _prefab;
+            GrowPool();
+        }
 
         void GrowPool()
         {
             for (int i = 0; i < 10; i++)
             {
                 var instance = Instantiate(prefab);
+                instance.name = prefab.name;
                 instance.transform.SetParent(transform);
                 Return(instance);
             }

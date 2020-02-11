@@ -15,6 +15,7 @@ namespace Extinction.Renderer
         // Fields
 
         [SerializeField] public Pool chunkPool;
+        [SerializeField] public PoolDeliverer propsPoolDeliverer;
         [SerializeField] public Pool navMeshLinkPool;
 
         [SerializeField] public World config;

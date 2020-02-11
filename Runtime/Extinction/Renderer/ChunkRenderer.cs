@@ -81,15 +81,15 @@ namespace Extinction.Renderer
         {
             foreach (PropData data in chunkData.propDataList)
             {
-                GameObject instance = Instantiate(data.prefab, data.position, Quaternion.identity);
-                instance.transform.SetParent(this.transform);
-                this.propsRendered.Add(instance);
+                GameObject instance = WorldRenderer.singleton.propsPoolDeliverer.GetPool(data.prefab.name).Deliver();
+                instance.transform.position = data.position;
+                propsRendered.Add(instance);
             }
         }
 
         public void ToPool()
         {
-            foreach (GameObject prop in this.propsRendered) Destroy(prop);
+            foreach (GameObject prop in this.propsRendered) WorldRenderer.singleton.propsPoolDeliverer.GetPool(prop.name).Return(prop);
             WorldRenderer.singleton.chunkPool.Return(this.gameObject);
         }
     }
