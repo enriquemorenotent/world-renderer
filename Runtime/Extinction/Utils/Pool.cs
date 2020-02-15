@@ -13,8 +13,9 @@ namespace Extinction.Utils
         public int instancesCreated = 0;
         public int instancesDelivered = 0;
         public int instancesReturned = 0;
+        public int poolIncreaseStep = 10;
 
-        void Start() 
+        void Start()
         {
             if (prefab != null) GrowPool();
         }
@@ -27,14 +28,14 @@ namespace Extinction.Utils
 
         void GrowPool()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < poolIncreaseStep; i++)
             {
                 var instance = Instantiate(prefab);
                 instance.name = prefab.name;
                 instance.transform.SetParent(transform);
                 Return(instance);
             }
-            instancesCreated += 10;
+            instancesCreated += poolIncreaseStep;
         }
 
         public void Return(GameObject instance)
