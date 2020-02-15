@@ -7,7 +7,7 @@ namespace Extinction.Utils
     {
         Dictionary<string, Pool> catalogue = new Dictionary<string, Pool>();
 
-        [SerializeField] GameObject poolPrefab;
+        [SerializeField] public GameObject poolPrefab;
         [SerializeField] GameObject[] prefabs;
 
         void Start()
