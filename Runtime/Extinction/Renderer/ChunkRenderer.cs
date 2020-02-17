@@ -89,8 +89,10 @@ namespace Extinction.Renderer
 
         public void ToPool()
         {
-            foreach (GameObject prop in this.propsRendered) WorldRenderer.singleton.propsPoolDeliverer.GetPool(prop.name).Return(prop);
-            WorldRenderer.singleton.chunkPool.Return(this.gameObject);
+            foreach (GameObject prop in propsRendered)
+                WorldRenderer.singleton.propsPoolDeliverer.GetPool(prop.name).Return(prop);
+            propsRendered = new List<GameObject>();
+            WorldRenderer.singleton.chunkPool.Return(gameObject);
         }
     }
 }

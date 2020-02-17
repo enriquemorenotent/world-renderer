@@ -15,6 +15,8 @@ namespace Extinction.Utils
         public int instancesReturned = 0;
         public int poolIncreaseStep = 10;
 
+        public int active = 0;
+
         void Start()
         {
             if (prefab != null) GrowPool();
@@ -33,7 +35,8 @@ namespace Extinction.Utils
                 var instance = Instantiate(prefab);
                 instance.name = prefab.name;
                 instance.transform.SetParent(transform);
-                Return(instance);
+                instance.SetActive(false);
+                queue.Enqueue(instance);
             }
             instancesCreated += poolIncreaseStep;
         }
@@ -43,6 +46,7 @@ namespace Extinction.Utils
             instance.SetActive(false);
             queue.Enqueue(instance);
             instancesReturned++;
+            active--;
         }
 
         public GameObject Deliver()
@@ -50,6 +54,8 @@ namespace Extinction.Utils
             if (queue.Count == 0) GrowPool();
 
             instancesDelivered++;
+            active++;
+
             GameObject instance = queue.Dequeue();
             instance.SetActive(true);
             return instance;
