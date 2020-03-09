@@ -1,6 +1,6 @@
 {
   "name": "com.tamagames.extinction.world-renderer",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "displayName": "Extinction - World renderer",
   "description": "World renderer for Extinction",
   "unity": "2019.1",
