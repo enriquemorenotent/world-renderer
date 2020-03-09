@@ -1,61 +1,51 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Extinction.Utils
 {
     public class DistanceDetector : MonoBehaviour
     {
-        #region Attributes
-
-        [SerializeField]
-        GameObject trackingTarget;
+        private bool tooFar;
+        [SerializeField] GameObject target;
 
         [SerializeField]
         [Range(10, 100)]
         public float tooFarLimit = 50;
 
-        [SerializeField]
-        string tagToTrack = "Player";
-
-        #endregion
+        public UnityEvent onEscape;
+        public UnityEvent onReturn;
 
         void Update()
         {
-            if (trackingTarget == null)
-                FindTarget();
-            else
-                Vector3.Distance(transform.position, trackingTarget.transform.position);
-        }
+            if (!target) return;
 
-        #region Helper methods
+            if (tooFar && !IsTargetTooFar())
+            {
+                tooFar = false;
+                onReturn.Invoke();
+            }
 
-        void FindTarget()
-        {
-            trackingTarget = GameObject.FindGameObjectWithTag(tagToTrack);
+            if (!tooFar && IsTargetTooFar())
+            {
+                tooFar = true;
+                onEscape.Invoke();
+            }
         }
 
         float GetDistance()
         {
-            if (trackingTarget == null) return 0;
-
-            Vector3 position = trackingTarget.transform.position;
+            Vector3 position = target.transform.position;
             position.y = 0;
             return Vector3.Distance(transform.position, position);
         }
 
-        #endregion
+        public void Reset() => tooFar = false;
 
-        #region Public methods
+        public void UpdateTarget(GameObject newTarget) => target = newTarget;
 
-        public bool IsTargetTooFar()
-        {
-            return GetDistance() > tooFarLimit;
-        }
+        public bool IsTargetTooFar() => GetDistance() > tooFarLimit;
 
-        public Vector3 TargetPosition()
-        {
-            return trackingTarget.transform.position;
-        }
+        public Vector3 TargetPosition() => target.transform.position;
 
-        #endregion
     }
 }

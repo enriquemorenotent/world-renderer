@@ -71,18 +71,17 @@ namespace Extinction.Renderer
             UpdateRenderPoint(Vector3.zero);
 
             detector = GetComponent<DistanceDetector>();
+            detector.onEscape.AddListener(() => UpdateRenderPoint(detector.TargetPosition()));
         }
 
         void Update()
         {
-            if (detector.IsTargetTooFar())
-                UpdateRenderPoint(detector.TargetPosition());
-
             if (renderNavMesh && navMeshDirty && AreAllChunksRendered())
             {
                 if (renderNavMeshLinks) SetNavMeshLinks();
                 navMeshSurface.BuildNavMeshAsync();
                 navMeshDirty = false;
+                detector.Reset();
             }
         }
 
