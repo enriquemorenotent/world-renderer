@@ -58,6 +58,8 @@ namespace Extinction.Config
 
         public Vector3 GetPoint(float x, float z) => new Vector3(x, GetHeight(x, z), z);
 
+        public Vector3 GetPoint(Vector3 point) => GetPoint(point.x, point.z);
+
         public int GetBiomeID(float x, float z) => biomeMap.At(x, z);
 
         public TerrainID GetTerrainID(float x, float z) => terrainMap.At(new Vector2(x, z));
