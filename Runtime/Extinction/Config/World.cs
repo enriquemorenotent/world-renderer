@@ -72,6 +72,8 @@ namespace Extinction.Config
 
         public Color GetTerrainColor(float x, float z) => colorMap.At(new Vector2(x, z));
 
+        public bool HasPropAt(Vector3 position) => HasPropAt(position.x, position.z);
+
         public bool HasPropAt(float x, float z) => GetHeight(x, z) >= propsOnlyAboveHeight && hasPropMap.At(x, z) > propSparsity;
 
         public GameObject GetProp(float x, float z) => GetBiome(x, z).GetProp(x, z);

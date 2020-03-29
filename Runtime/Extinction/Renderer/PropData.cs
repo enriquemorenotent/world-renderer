@@ -27,7 +27,8 @@ namespace Extinction.Renderer
                         propData.position = position;
                         propData.position.y = config.GetHeight(position.x, position.z) + config.propVerticalOffset;
                         propData.position.x += 0.5f;
-                        propData.position.z += 0.5f + (float)random.Next(0, 100) / 1000;
+                        propData.position.z += 0.5f;
+                        // propData.position.z += 0.5f + (float)random.Next(0, 100) / 1000;
                         propData.prefab = config.GetProp(position.x, position.z);
                         dataList.Add(propData);
                     }

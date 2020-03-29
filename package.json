@@ -5,9 +5,7 @@
   "description": "World renderer for Extinction",
   "unity": "2019.1",
   "unityRelease": "0b5",
-  "dependencies": {
-    "com.tamagames.navmesh-components": "https://github.com/enriquemorenotent/navmesh-components.git"
-  },
+  "dependencies": {},
   "keywords": [],
   "author": {
     "name": "Enrique Moreno Tent",
