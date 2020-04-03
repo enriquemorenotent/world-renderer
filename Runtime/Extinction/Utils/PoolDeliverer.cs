@@ -10,6 +10,8 @@ namespace Extinction.Utils
         [SerializeField] public GameObject poolPrefab;
         [SerializeField] GameObject[] prefabs;
 
+        [SerializeField] private int poolIncreaseStep = 10;
+
         void Start()
         {
             foreach (var prefab in prefabs) InstantiatePool(prefab);
@@ -21,6 +23,7 @@ namespace Extinction.Utils
             instance.transform.SetParent(transform);
             instance.name = "Pool " + prefab.name;
             Pool pool = instance.GetComponent<Pool>();
+            pool.poolIncreaseStep = poolIncreaseStep;
             pool.SetPrefab(prefab);
             catalogue.Add(prefab.name, pool);
         }
