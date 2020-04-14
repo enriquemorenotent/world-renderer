@@ -57,8 +57,6 @@ namespace Extinction.Renderer
             if (WorldRenderer.GetChunkData().TryGetValue(transform.position, out chunkData))
             {
                 RenderMesh(chunkData.meshData);
-                if (WorldRenderer.singleton.renderProps)
-                    RenderProps(chunkData);
 
                 isChunkRendered = true;
             }
@@ -76,16 +74,6 @@ namespace Extinction.Renderer
 
             meshFilter.mesh = mesh;
             meshCollider.sharedMesh = mesh;
-        }
-
-        void RenderProps(ChunkData chunkData)
-        {
-            foreach (PropData data in chunkData.propDataList)
-            {
-                GameObject instance = WorldRenderer.singleton.propsPoolDeliverer.GetPool(data.prefab.name).Deliver();
-                instance.transform.position = data.position;
-                propsRendered.Add(instance);
-            }
         }
 
         public void ToPool()
