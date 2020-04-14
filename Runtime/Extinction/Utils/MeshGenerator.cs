@@ -2,15 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Extinction.Config;
+using Extinction.Renderer;
+using Extinction.Data;
 
-namespace Extinction.Renderer
+namespace Extinction.Utils
 {
-    public class MeshData
+    public static class MeshGenerator
     {
-        public List<Vector3> vertices = new List<Vector3>();
-        public List<int> triangles = new List<int>();
-        public List<Vector2> uvs = new List<Vector2>();
-
         public static MeshData LoadDataAt(Vector3 position, int chunkSize, World config)
         {
             MeshData data = new MeshData();
@@ -128,12 +126,6 @@ namespace Extinction.Renderer
                 }
 
             return data;
-        }
-
-
-        public static MeshData LoadDataAt(Vector3 position, int chunkSize)
-        {
-            return LoadDataAt(position, chunkSize, WorldRenderer.Config());
         }
     }
 }

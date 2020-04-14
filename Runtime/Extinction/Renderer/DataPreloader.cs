@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Extinction.Utils;
+using Extinction.Data;
 
 namespace Extinction.Renderer
 {
@@ -17,18 +18,29 @@ namespace Extinction.Renderer
 
         Vector3 dataPoint;
 
+        Config.World config;
+
         // Constructor
 
-        public DataPreloader(int _loadRadius, int _chunkSize, Vector3 position)
+        public DataPreloader(int _loadRadius, int _chunkSize, Config.World _config)
         {
-            chunkSize = _chunkSize;
             loadRadius = _loadRadius;
+            chunkSize = _chunkSize;
+            config = _config;
             chunkDataCache = new Cache<Vector3, ChunkData>(LoadChunkData, CleanChunkData);
         }
 
         // Methods
 
-        public ChunkData LoadChunkData(Vector3 position) => ChunkData.LoadDataAt(position, chunkSize);
+        public ChunkData LoadChunkData(Vector3 position)
+        {
+            ChunkData data = new ChunkData();
+
+            data.meshData = Utils.MeshGenerator.LoadDataAt(position, chunkSize, config);
+            data.propDataList = Utils.PropDataGenerator.LoadDataAt(position, chunkSize, config);
+
+            return data;
+        }
 
         public void LoadAround(Vector3 position)
         {

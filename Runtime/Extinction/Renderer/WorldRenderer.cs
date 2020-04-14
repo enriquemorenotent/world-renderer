@@ -5,6 +5,7 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 using Extinction.Config;
 using Extinction.Utils;
+using Extinction.Data;
 
 namespace Extinction.Renderer
 {
@@ -19,11 +20,13 @@ namespace Extinction.Renderer
 
         [SerializeField] public World config;
 
-        [Range(2, 20)] public int radius = 2;
+        [SerializeField] private MapRenderConfig mapRenderConfig;
 
-        [Range(2, 30)] public int chunkSize = 10;
+        // [Range(2, 20)] public int radius = 2;
 
-        [Range(2, 20)] public int cacheRadius = 5;
+        // [Range(2, 30)] public int chunkSize = 10;
+
+        // [Range(2, 20)] public int cacheRadius = 5;
 
         [Range(300, 2000)] public int visitedChunkBufferRange = 500;
 
@@ -35,13 +38,11 @@ namespace Extinction.Renderer
 
         DataPreloader dataPreloader;
 
-        public MinimapDataPreloader minimapDataPreloader;
-
         public Dictionary<Vector3, GameObject> renderedChunks = new Dictionary<Vector3, GameObject>();
 
         public List<Vector3> visitedChunks = new List<Vector3>();
 
-        public int ChunkDiameter { get { return chunkSize * 2 + 1; } }
+        public int ChunkDiameter { get => mapRenderConfig.chunkSize * 2 + 1; }
 
         // Singleton
 
@@ -60,8 +61,7 @@ namespace Extinction.Renderer
         {
             singleton = this;
             config.Setup();
-            dataPreloader = new DataPreloader(radius + cacheRadius, chunkSize, Vector3.zero);
-            minimapDataPreloader = new MinimapDataPreloader();
+            dataPreloader = new DataPreloader(mapRenderConfig.radius + mapRenderConfig.cacheRadius, mapRenderConfig.chunkSize, config);
             UpdateRenderPoint(Vector3.zero);
 
             detector = GetComponent<DistanceDetector>();
@@ -94,8 +94,8 @@ namespace Extinction.Renderer
         void DeleteDistantChunks()
         {
             var distantChunks = renderedChunks.Where(pair =>
-                Mathf.Abs(pair.Key.x - transform.position.x) / ChunkDiameter > radius ||
-                Mathf.Abs(pair.Key.z - transform.position.z) / ChunkDiameter > radius
+                Mathf.Abs(pair.Key.x - transform.position.x) / ChunkDiameter > mapRenderConfig.radius ||
+                Mathf.Abs(pair.Key.z - transform.position.z) / ChunkDiameter > mapRenderConfig.radius
             ).ToList();
 
             foreach (var pair in distantChunks)
@@ -140,8 +140,8 @@ namespace Extinction.Renderer
             onRenderPointUpdated.Invoke();
             DeleteDistantChunks();
 
-            for (int z = -radius; z <= radius; z++)
-                for (int x = -radius; x <= radius; x++)
+            for (int z = -mapRenderConfig.radius; z <= mapRenderConfig.radius; z++)
+                for (int x = -mapRenderConfig.radius; x <= mapRenderConfig.radius; x++)
                     InstantiateChunk(x, z);
         }
 

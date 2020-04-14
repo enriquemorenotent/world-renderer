@@ -1,18 +1,15 @@
-using UnityEngine;
 using System.Collections.Generic;
-using Extinction.Config;
+using UnityEngine;
+using Extinction.Renderer;
+using Extinction.Data;
 
-namespace Extinction.Renderer
+namespace Extinction.Utils
 {
-    public class PropData
+    public static class PropDataGenerator
     {
-        public Vector3 position;
-        public GameObject prefab;
-
-        public static List<PropData> LoadDataAt(Vector3 chunkPosition, int chunkSize)
+        public static List<PropData> LoadDataAt(Vector3 chunkPosition, int chunkSize, Config.World config)
         {
             List<PropData> dataList = new List<PropData>();
-            World config = WorldRenderer.Config();
 
             System.Random random = new System.Random();
 
