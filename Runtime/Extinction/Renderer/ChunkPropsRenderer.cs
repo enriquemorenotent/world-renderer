@@ -6,40 +6,46 @@ namespace Extinction.Renderer
 {
     public class ChunkPropsRenderer : MonoBehaviour
     {
-        private bool arePropsRendered = false;
+        private bool rendered = false;
         private List<GameObject> props = new List<GameObject>();
+        private ChunkData chunkData;
 
-        void OnEnable() { arePropsRendered = false; }
+        void OnEnable() { rendered = false; }
 
         void OnDisable()
         {
+            props.ForEach(ReturnPropToPool);
             props.Clear();
         }
 
         void Update()
         {
-            if (arePropsRendered) return;
+            if (rendered) return;
             TryRenderProps();
         }
 
         void TryRenderProps()
         {
-            ChunkData chunkData;
-            if (WorldRenderer.GetChunkData().TryGetValue(transform.position, out chunkData))
-            {
-                RenderProps(chunkData);
-                arePropsRendered = true;
-            }
+            if (!WorldRenderer.GetChunkData().TryGetValue(transform.position, out chunkData)) return;
+
+            chunkData.propDataList.ForEach(RenderProp);
+            rendered = true;
         }
 
-        void RenderProps(ChunkData chunkData)
+        void RenderProp(PropData data)
         {
-            foreach (PropData data in chunkData.propDataList)
-            {
-                GameObject instance = WorldRenderer.singleton.propsPoolDeliverer.GetPool(data.prefab.name).Deliver();
-                instance.transform.position = data.position;
-                props.Add(instance);
-            }
+            GameObject instance = GetPool(data.prefab.name).Deliver();
+            instance.name = data.prefab.name;
+            instance.transform.position = data.position;
+            props.Add(instance);
         }
+
+        void ReturnPropToPool(GameObject instance)
+        {
+            if (instance == null) return;
+            GetPool(instance.name).Return(instance);
+        }
+
+        Utils.Pool GetPool(string name) => WorldRenderer.singleton.propsPoolDeliverer.GetPool(name);
     }
 }

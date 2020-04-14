@@ -5,17 +5,21 @@ namespace Extinction.Utils
 {
     public class PoolDeliverer : MonoBehaviour
     {
+        // The reason why we are using the name of the prefab, and not the prefab
+        // itself, is because it is impossible to check if a GameObject is an
+        // instance of a prefab. Therefore, returning an instance to its proper
+        // pool would be much more difficult.
+        //
+        // TLDR: Use names, not prefabs, as keys for the dictionary
+
         Dictionary<string, Pool> catalogue = new Dictionary<string, Pool>();
 
         [SerializeField] public GameObject poolPrefab;
-        [SerializeField] GameObject[] prefabs;
+        [SerializeField] List<GameObject> prefabs;
 
         [SerializeField] private int poolIncreaseStep = 10;
 
-        void Start()
-        {
-            foreach (var prefab in prefabs) InstantiatePool(prefab);
-        }
+        void Start() { prefabs.ForEach(InstantiatePool); }
 
         void InstantiatePool(GameObject prefab)
         {
@@ -30,8 +34,7 @@ namespace Extinction.Utils
 
         public Pool GetPool(string prefabName)
         {
-            Pool pool;
-            return catalogue.TryGetValue(prefabName, out pool) ? pool : null;
+            return catalogue.TryGetValue(prefabName, out Pool pool) ? pool : null;
         }
     }
 }
