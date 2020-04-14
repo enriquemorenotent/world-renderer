@@ -8,7 +8,6 @@ namespace Extinction.Renderer
     {
         private bool rendered = false;
         private List<GameObject> props = new List<GameObject>();
-        private ChunkData chunkData;
 
         void OnEnable() { rendered = false; }
 
@@ -26,9 +25,9 @@ namespace Extinction.Renderer
 
         void TryRenderProps()
         {
-            if (!WorldRenderer.GetChunkData().TryGetValue(transform.position, out chunkData)) return;
+            if (!WorldRenderer.GetChunkData().TryGetValue(transform.position, out List<PropData> data)) return;
 
-            chunkData.propDataList.ForEach(RenderProp);
+            data.ForEach(RenderProp);
             rendered = true;
         }
 

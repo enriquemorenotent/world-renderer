@@ -7,37 +7,27 @@ using Extinction.Data;
 namespace Extinction.Renderer
 {
     [RequireComponent(typeof(MeshCollider))]
-    [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshRenderer))]
     public class ChunkRenderer : MonoBehaviour
     {
-        public Config.IWorld config;
-        public Config.MapRenderConfig mapRenderConfig;
-        public Vector3 renderPosition;
-        public bool needsToBeRendered = false;
-
-        MeshData meshData;
+        private Config.IWorld config;
+        private Config.MapRenderConfig mapRenderConfig;
+        private Vector3 renderPosition;
+        private bool needsToBeRendered = false;
+        private MeshData meshData;
 
         private MeshCollider meshCollider;
         private MeshFilter meshFilter;
-
-        // Other
-
-        List<GameObject> propsRendered;
-
-        // Unity methods
 
         void Awake()
         {
             meshCollider = GetComponent<MeshCollider>();
             meshFilter = GetComponent<MeshFilter>();
-            propsRendered = new List<GameObject>();
         }
 
         void OnEnable()
         {
             meshFilter.mesh = new Mesh();
-            meshFilter.mesh.name = "Chunk mesh";
             meshCollider.sharedMesh = new Mesh();
         }
 
@@ -62,19 +52,13 @@ namespace Extinction.Renderer
             Task.Run(GenerateMeshData);
         }
 
-        // Other
-
         public bool IsRendered() => needsToBeRendered;
 
-        void GenerateMeshData()
-        {
-            meshData = Utils.MeshGenerator.LoadDataAt(renderPosition, mapRenderConfig.chunkSize, config);
-        }
+        void GenerateMeshData() { meshData = Utils.MeshGenerator.LoadDataAt(renderPosition, mapRenderConfig.chunkSize, config); }
 
         void RenderMesh(MeshData data)
         {
             Mesh mesh = new Mesh();
-            mesh.name = "Chunk";
 
             mesh.SetVertices(data.vertices);
             mesh.SetTriangles(data.triangles, 0);
@@ -85,12 +69,6 @@ namespace Extinction.Renderer
             meshCollider.sharedMesh = mesh;
         }
 
-        public void ToPool()
-        {
-            foreach (GameObject prop in propsRendered)
-                WorldRenderer.singleton.propsPoolDeliverer.GetPool(prop.name).Return(prop);
-            propsRendered = new List<GameObject>();
-            WorldRenderer.singleton.chunkPool.Return(gameObject);
-        }
+        public void ToPool() { WorldRenderer.singleton.chunkPool.Return(gameObject); }
     }
 }

@@ -11,7 +11,7 @@ namespace Extinction.Renderer
     {
         // Attributes
 
-        public Cache<Vector3, ChunkData> chunkDataCache;
+        public Cache<Vector3, List<PropData>> data;
 
         int loadRadius;
         int chunkSize;
@@ -27,20 +27,13 @@ namespace Extinction.Renderer
             loadRadius = _loadRadius;
             chunkSize = _chunkSize;
             config = _config;
-            chunkDataCache = new Cache<Vector3, ChunkData>(LoadChunkData, CleanChunkData);
+            data = new Cache<Vector3, List<PropData>>(LoadChunkData, CleanChunkData);
         }
 
         // Methods
 
-        public ChunkData LoadChunkData(Vector3 position)
-        {
-            ChunkData data = new ChunkData();
-
-            data.meshData = Utils.MeshGenerator.LoadDataAt(position, chunkSize, config);
-            data.propDataList = Utils.PropDataGenerator.LoadDataAt(position, chunkSize, config);
-
-            return data;
-        }
+        public List<PropData> LoadChunkData(Vector3 position) =>
+            Utils.PropDataGenerator.LoadDataAt(position, chunkSize, config);
 
         public void LoadAround(Vector3 position)
         {
@@ -50,7 +43,7 @@ namespace Extinction.Renderer
 
         void UpdateData()
         {
-            chunkDataCache.CleanUp();
+            data.CleanUp();
             CollectData();
         }
 
@@ -72,7 +65,7 @@ namespace Extinction.Renderer
                 for (int x = -loadRadius; x <= loadRadius; x++)
                 {
                     position = new Vector3(dataPoint.x + x * diameter, 0, dataPoint.z + z * diameter);
-                    chunkDataCache.At(position);
+                    data.At(position);
                 }
         }
     }

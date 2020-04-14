@@ -44,7 +44,7 @@ namespace Extinction.Renderer
 
         public static World Config() => singleton.config;
 
-        public static Cache<Vector3, ChunkData> GetChunkData() => singleton.dataPreloader.chunkDataCache;
+        public static Cache<Vector3, List<PropData>> GetChunkData() => singleton.dataPreloader.data;
 
         [Header("Flags")]
         public bool renderProps = true;
