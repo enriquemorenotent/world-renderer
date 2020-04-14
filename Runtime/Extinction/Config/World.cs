@@ -5,8 +5,19 @@ using Extinction.Utils;
 
 namespace Extinction.Config
 {
+    public interface IWorld
+    {
+        int GetHeight(float x, float z);
+
+        List<TileID> GetTileIDs(float x, float z);
+
+        List<Vector2> GetUVsFor(TileID tileID);
+        List<Vector2> GetUVsFor(int biomeIndex, int terrainIndex, int nscode);
+        List<Vector2> GetUVsFor(int col, int row);
+    }
+
     [CreateAssetMenu(fileName = "Config", menuName = "Extinction/Config/World", order = 1)]
-    public class World : ScriptableObject
+    public class World : ScriptableObject, IWorld
     {
         Noise heightMap, biomeMap, hasPropMap;
         Cache<Vector2, TerrainID> terrainMap;

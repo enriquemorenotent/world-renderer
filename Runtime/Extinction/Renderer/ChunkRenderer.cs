@@ -11,14 +11,15 @@ namespace Extinction.Renderer
     [RequireComponent(typeof(MeshRenderer))]
     public class ChunkRenderer : MonoBehaviour
     {
-        // Fields
+        public Config.IWorld config;
+        public Config.MapRenderConfig mapRenderConfig;
+        public Vector3 renderPosition;
+        public bool needsToBeRendered = false;
 
-        [SerializeField] bool isChunkRendered = false;
+        MeshData meshData;
 
-        // Components
-
-        MeshCollider meshCollider;
-        MeshFilter meshFilter;
+        private MeshCollider meshCollider;
+        private MeshFilter meshFilter;
 
         // Other
 
@@ -38,28 +39,36 @@ namespace Extinction.Renderer
             meshFilter.mesh = new Mesh();
             meshFilter.mesh.name = "Chunk mesh";
             meshCollider.sharedMesh = new Mesh();
-
-            isChunkRendered = false;
         }
 
         void Update()
         {
-            if (!isChunkRendered) TryRenderChunk();
+            if (!needsToBeRendered) return;
+            if (meshData == null) return;
+
+            RenderMesh(meshData);
+            needsToBeRendered = true;
+        }
+
+        public void StartRendering(Config.IWorld _config, Config.MapRenderConfig _mapRenderConfig, Vector3 _renderPosition)
+        {
+            config = _config;
+            mapRenderConfig = _mapRenderConfig;
+            renderPosition = _renderPosition;
+
+            meshData = null;
+            needsToBeRendered = true;
+
+            Task.Run(GenerateMeshData);
         }
 
         // Other
 
-        public bool IsRendered() => isChunkRendered;
+        public bool IsRendered() => needsToBeRendered;
 
-        void TryRenderChunk()
+        void GenerateMeshData()
         {
-            ChunkData chunkData;
-            if (WorldRenderer.GetChunkData().TryGetValue(transform.position, out chunkData))
-            {
-                RenderMesh(chunkData.meshData);
-
-                isChunkRendered = true;
-            }
+            meshData = Utils.MeshGenerator.LoadDataAt(renderPosition, mapRenderConfig.chunkSize, config);
         }
 
         void RenderMesh(MeshData data)

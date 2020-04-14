@@ -22,12 +22,6 @@ namespace Extinction.Renderer
 
         [SerializeField] private MapRenderConfig mapRenderConfig;
 
-        // [Range(2, 20)] public int radius = 2;
-
-        // [Range(2, 30)] public int chunkSize = 10;
-
-        // [Range(2, 20)] public int cacheRadius = 5;
-
         [Range(300, 2000)] public int visitedChunkBufferRange = 500;
 
         // Components
@@ -122,8 +116,10 @@ namespace Extinction.Renderer
             if (isChunkRenderedAt(position)) return;
 
             GameObject chunkInstance = chunkPool.Deliver();
-            chunkInstance.transform.position = position;
             chunkInstance.name = string.Format("Chunk {0}, {1}", position.x, position.z);
+            chunkInstance.transform.position = position;
+            ChunkRenderer chunkRenderer = chunkInstance.GetComponent<ChunkRenderer>();
+            chunkRenderer.StartRendering(config, mapRenderConfig, position);
 
             // Do NOT do this. It will mess the positions of the chunks when moving around
             // chunkInstance.transform.SetParent(this.transform);

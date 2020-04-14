@@ -9,7 +9,7 @@ namespace Extinction.Utils
 {
     public static class MeshGenerator
     {
-        public static MeshData LoadDataAt(Vector3 position, int chunkSize, World config)
+        public static MeshData LoadDataAt(Vector3 position, int chunkSize, IWorld config)
         {
             MeshData data = new MeshData();
 
