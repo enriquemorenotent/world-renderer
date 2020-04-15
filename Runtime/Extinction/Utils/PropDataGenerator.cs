@@ -7,7 +7,7 @@ namespace Extinction.Utils
 {
     public static class PropDataGenerator
     {
-        public static List<PropData> LoadDataAt(Vector3 chunkPosition, int chunkSize, Config.World config)
+        public static List<PropData> LoadDataAt(Vector3 chunkPosition, int chunkSize, Config.IWorld config)
         {
             List<PropData> dataList = new List<PropData>();
 
@@ -22,7 +22,7 @@ namespace Extinction.Utils
                     {
                         PropData propData = new PropData();
                         propData.position = position;
-                        propData.position.y = config.GetHeight(position.x, position.z) + config.propVerticalOffset;
+                        propData.position.y = config.GetHeight(position.x, position.z) + config.GetPropVerticalOffset();
                         propData.position.x += 0.5f;
                         propData.position.z += 0.5f;
                         // propData.position.z += 0.5f + (float)random.Next(0, 100) / 1000;

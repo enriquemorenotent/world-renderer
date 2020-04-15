@@ -30,8 +30,6 @@ namespace Extinction.Renderer
 
         // Other
 
-        DataPreloader dataPreloader;
-
         public Dictionary<Vector3, GameObject> renderedChunks = new Dictionary<Vector3, GameObject>();
 
         public List<Vector3> visitedChunks = new List<Vector3>();
@@ -44,8 +42,6 @@ namespace Extinction.Renderer
 
         public static World Config() => singleton.config;
 
-        public static Cache<Vector3, List<PropData>> GetChunkData() => singleton.dataPreloader.data;
-
         [Header("Flags")]
         public bool renderProps = true;
 
@@ -55,7 +51,6 @@ namespace Extinction.Renderer
         {
             singleton = this;
             config.Setup();
-            dataPreloader = new DataPreloader(mapRenderConfig.radius + mapRenderConfig.cacheRadius, mapRenderConfig.chunkSize, config);
             UpdateRenderPoint(Vector3.zero);
 
             detector = GetComponent<DistanceDetector>();
@@ -94,6 +89,7 @@ namespace Extinction.Renderer
 
             foreach (var pair in distantChunks)
             {
+                pair.Value.GetComponent<ChunkPropsRenderer>().ReturnPropsToPool();
                 pair.Value.GetComponent<ChunkRenderer>().ToPool();
                 renderedChunks.Remove(pair.Key);
             }
@@ -118,11 +114,12 @@ namespace Extinction.Renderer
             GameObject chunkInstance = chunkPool.Deliver();
             chunkInstance.name = string.Format("Chunk {0}, {1}", position.x, position.z);
             chunkInstance.transform.position = position;
+
             ChunkRenderer chunkRenderer = chunkInstance.GetComponent<ChunkRenderer>();
             chunkRenderer.StartRendering(config, mapRenderConfig, position);
 
-            // Do NOT do this. It will mess the positions of the chunks when moving around
-            // chunkInstance.transform.SetParent(this.transform);
+            ChunkPropsRenderer chunkPropsRenderer = chunkInstance.GetComponent<ChunkPropsRenderer>();
+            chunkPropsRenderer.StartRendering(config, mapRenderConfig, position);
 
             TrackChunk(chunkInstance, position);
         }
@@ -131,8 +128,6 @@ namespace Extinction.Renderer
         {
             Vector3 drawPoint = ClosestRenderPoint(point);
             transform.position = drawPoint;
-            dataPreloader.LoadAround(transform.position);
-            // minimapDataPreloader.LookAround(transform.position);
             onRenderPointUpdated.Invoke();
             DeleteDistantChunks();
 
