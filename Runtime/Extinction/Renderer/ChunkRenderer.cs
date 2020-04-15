@@ -36,8 +36,8 @@ namespace Extinction.Renderer
             if (!needsToBeRendered) return;
             if (meshData == null) return;
 
-            RenderMesh(meshData);
-            needsToBeRendered = true;
+            RenderMesh();
+            needsToBeRendered = false;
         }
 
         public void StartRendering(Config.IWorld _config, Config.MapRenderConfig _mapRenderConfig, Vector3 _renderPosition)
@@ -54,15 +54,18 @@ namespace Extinction.Renderer
 
         public bool IsRendered() => needsToBeRendered;
 
-        void GenerateMeshData() { meshData = Utils.MeshGenerator.LoadDataAt(renderPosition, mapRenderConfig.chunkSize, config); }
+        void GenerateMeshData()
+        {
+            meshData = Utils.MeshGenerator.LoadDataAt(renderPosition, mapRenderConfig.chunkSize, config);
+        }
 
-        void RenderMesh(MeshData data)
+        void RenderMesh()
         {
             Mesh mesh = new Mesh();
 
-            mesh.SetVertices(data.vertices);
-            mesh.SetTriangles(data.triangles, 0);
-            mesh.SetUVs(0, data.uvs);
+            mesh.SetVertices(meshData.vertices);
+            mesh.SetTriangles(meshData.triangles, 0);
+            mesh.SetUVs(0, meshData.uvs);
             mesh.RecalculateNormals();
 
             meshFilter.mesh = mesh;
