@@ -14,6 +14,13 @@ namespace Extinction.Config
         List<Vector2> GetUVsFor(TileID tileID);
         List<Vector2> GetUVsFor(int biomeIndex, int terrainIndex, int nscode);
         List<Vector2> GetUVsFor(int col, int row);
+
+        bool HasPropAt(Vector3 position);
+        bool HasPropAt(float x, float z);
+
+        GameObject GetProp(float x, float z);
+
+        float GetPropVerticalOffset();
     }
 
     [CreateAssetMenu(fileName = "Config", menuName = "Extinction/Config/World", order = 1)]
@@ -88,6 +95,8 @@ namespace Extinction.Config
         public bool HasPropAt(float x, float z) => GetHeight(x, z) >= propsOnlyAboveHeight && hasPropMap.At(x, z) > propSparsity;
 
         public GameObject GetProp(float x, float z) => GetBiome(x, z).GetProp(x, z);
+
+        public float GetPropVerticalOffset() => propVerticalOffset;
 
         public List<TileID> GetTileIDs(float x, float z)
         {
