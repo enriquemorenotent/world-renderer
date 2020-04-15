@@ -13,39 +13,16 @@ namespace Extinction.Renderer
     [RequireComponent(typeof(DistanceDetector))]
     public class WorldRenderer : MonoBehaviour
     {
-        // Fields
-
-        [SerializeField] public Pool chunkPool;
-        [SerializeField] public PoolDeliverer propsPoolDeliverer;
-
-        [SerializeField] public World config;
-
-        [SerializeField] private MapRenderConfig mapRenderConfig;
-
-        [Range(300, 2000)] public int visitedChunkBufferRange = 500;
-
-        // Components
-
-        DistanceDetector detector;
-
-        // Other
-
-        public Dictionary<Vector3, GameObject> renderedChunks = new Dictionary<Vector3, GameObject>();
-
-        public List<Vector3> visitedChunks = new List<Vector3>();
-
-        public int ChunkDiameter { get => mapRenderConfig.chunkSize * 2 + 1; }
-
-        // Singleton
-
         public static WorldRenderer singleton { get; private set; }
 
-        public static World Config() => singleton.config;
+        [SerializeField] public Pool chunkPool = null;
+        [SerializeField] public PoolDeliverer propsPoolDeliverer;
+        [SerializeField] public World config;
+        [SerializeField] private MapRenderConfig mapRenderConfig = null;
 
-        [Header("Flags")]
-        public bool renderProps = true;
+        private DistanceDetector detector;
 
-        // Unity methods
+        private Dictionary<Vector3, GameObject> activeChunks = new Dictionary<Vector3, GameObject>();
 
         void Awake()
         {
@@ -57,62 +34,36 @@ namespace Extinction.Renderer
             detector.onEscape.AddListener(() => UpdateRenderPoint(detector.TargetPosition()));
         }
 
-        void Update()
-        {
-            if (AreAllChunksRendered())
-                detector.Reset();
-        }
-
-        // Helpers
-
-        Vector3 ClosestRenderPoint(Vector3 position) => new Vector3Int(
-            (int)(position.x / ChunkDiameter) * ChunkDiameter,
-            0,
-            (int)(position.z / ChunkDiameter) * ChunkDiameter
-        );
-
-        bool AreAllChunksRendered()
-        {
-            return renderedChunks.All(pair => pair.Value.GetComponent<ChunkRenderer>().IsRendered());
-        }
-
-        //
-        // Chunk control
-        //
-
         void DeleteDistantChunks()
         {
-            var distantChunks = renderedChunks.Where(pair =>
-                Mathf.Abs(pair.Key.x - transform.position.x) / ChunkDiameter > mapRenderConfig.radius ||
-                Mathf.Abs(pair.Key.z - transform.position.z) / ChunkDiameter > mapRenderConfig.radius
+            var distantChunks = activeChunks.Where(pair =>
+                Mathf.Abs(pair.Key.x - transform.position.x) / mapRenderConfig.ChunkDiameter > mapRenderConfig.radius ||
+                Mathf.Abs(pair.Key.z - transform.position.z) / mapRenderConfig.ChunkDiameter > mapRenderConfig.radius
             ).ToList();
 
             foreach (var pair in distantChunks)
             {
                 pair.Value.GetComponent<ChunkPropsRenderer>().ReturnPropsToPool();
                 pair.Value.GetComponent<ChunkRenderer>().ToPool();
-                renderedChunks.Remove(pair.Key);
+                activeChunks.Remove(pair.Key);
             }
-
-            visitedChunks.RemoveAll(position => Vector3.Distance(transform.position, position) > visitedChunkBufferRange);
         }
 
-        bool isChunkRenderedAt(Vector3 position) => renderedChunks.ContainsKey(position);
+        bool IsChunkActive(Vector3 position) => activeChunks.ContainsKey(position);
 
-        void TrackChunk(GameObject chunkInstance, Vector3 position)
+        void TrackChunk(Vector3 position, GameObject chunkInstance)
         {
-            renderedChunks.Add(position, chunkInstance);
-            if (!visitedChunks.Contains(position)) visitedChunks.Add(position);
+            activeChunks.Add(position, chunkInstance);
         }
 
         void InstantiateChunk(int x, int z)
         {
-            Vector3 position = new Vector3(transform.position.x + x * ChunkDiameter, 0, transform.position.z + z * ChunkDiameter);
+            Vector3 position = transform.position + mapRenderConfig.GetPositionOfChunk(x, z);
 
-            if (isChunkRenderedAt(position)) return;
+            if (IsChunkActive(position)) return;
 
             GameObject chunkInstance = chunkPool.Deliver();
-            chunkInstance.name = string.Format("Chunk {0}, {1}", position.x, position.z);
+            chunkInstance.name = $"Chunk {position.x}, {position.z}";
             chunkInstance.transform.position = position;
 
             ChunkRenderer chunkRenderer = chunkInstance.GetComponent<ChunkRenderer>();
@@ -121,13 +72,12 @@ namespace Extinction.Renderer
             ChunkPropsRenderer chunkPropsRenderer = chunkInstance.GetComponent<ChunkPropsRenderer>();
             chunkPropsRenderer.StartRendering(config, mapRenderConfig, position);
 
-            TrackChunk(chunkInstance, position);
+            TrackChunk(position, chunkInstance);
         }
 
         void UpdateRenderPoint(Vector3 point)
         {
-            Vector3 drawPoint = ClosestRenderPoint(point);
-            transform.position = drawPoint;
+            transform.position = mapRenderConfig.ClosestChunkPosition(point); ;
             onRenderPointUpdated.Invoke();
             DeleteDistantChunks();
 
@@ -136,9 +86,7 @@ namespace Extinction.Renderer
                     InstantiateChunk(x, z);
         }
 
-        //
-        // Events
-        //
+        #region Events
 
         static UnityEvent onRenderPointUpdated = new UnityEvent();
 
@@ -146,5 +94,7 @@ namespace Extinction.Renderer
         {
             onRenderPointUpdated.AddListener(action);
         }
+
+        #endregion
     }
 }
