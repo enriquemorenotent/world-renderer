@@ -5,7 +5,6 @@ namespace Extinction.Utils
 {
     public class DistanceDetector : MonoBehaviour
     {
-        private bool tooFar;
         [SerializeField] GameObject target;
 
         [SerializeField]
@@ -19,31 +18,21 @@ namespace Extinction.Utils
         {
             if (!target) return;
 
-            if (tooFar && !IsTargetTooFar())
-            {
-                tooFar = false;
-                onReturn.Invoke();
-            }
-
-            if (!tooFar && IsTargetTooFar())
-            {
-                tooFar = true;
-                onEscape.Invoke();
-            }
+            CheckEscape();
         }
 
-        float GetDistance()
+        void CheckEscape()
         {
-            Vector3 position = target.transform.position;
-            position.y = 0;
-            return Vector3.Distance(transform.position, position);
+            if (!IsTargetTooFar()) return;
+            transform.position = TargetPosition();
+            onEscape.Invoke();
         }
 
-        public void Reset() => tooFar = false;
+        float DistanceToTarget() => Vector3.Distance(transform.position, TargetPosition());
 
         public void UpdateTarget(GameObject newTarget) => target = newTarget;
 
-        public bool IsTargetTooFar() => GetDistance() > tooFarLimit;
+        public bool IsTargetTooFar() => DistanceToTarget() > tooFarLimit;
 
         public Vector3 TargetPosition() => target.transform.position;
 

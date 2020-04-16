@@ -16,7 +16,7 @@ namespace Extinction.Renderer
         public static WorldRenderer singleton { get; private set; }
 
         [SerializeField] public Pool chunkPool = null;
-        [SerializeField] public PoolDeliverer propsPoolDeliverer;
+        [SerializeField] public Pool propsPool = null;
         [SerializeField] public World config;
         [SerializeField] private MapRenderConfig mapRenderConfig = null;
 

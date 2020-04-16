@@ -10,6 +10,7 @@ namespace Extinction.Utils
 
         Queue<GameObject> queue = new Queue<GameObject>();
 
+        public int instancesOnStart = 100;
         public int instancesCreated = 0;
         public int instancesDelivered = 0;
         public int instancesReturned = 0;
@@ -19,27 +20,40 @@ namespace Extinction.Utils
 
         void Start()
         {
-            if (prefab != null) GrowPool();
+            if (prefab == null) return;
+
+            GrowPoolByAmount(instancesOnStart);
+            prefab.SetActive(false);
+
+        }
+
+        void Update()
+        {
+            if (instancesCreated - queue.Count < poolIncreaseStep)
+                GrowPoolByOne();
         }
 
         public void SetPrefab(GameObject _prefab)
         {
             prefab = _prefab;
-            GrowPool();
+            prefab.SetActive(false);
+            
+            GrowPoolByDefaultStep();
         }
 
-        void GrowPool()
+        void GrowPoolByOne()
         {
-            for (int i = 0; i < poolIncreaseStep; i++)
-            {
-                var instance = Instantiate(prefab);
-                instance.name = prefab.name;
-                instance.transform.SetParent(transform);
-                instance.SetActive(false);
-                queue.Enqueue(instance);
-            }
-            instancesCreated += poolIncreaseStep;
+            var instance = Instantiate(prefab);
+            instance.name = prefab.name;
+            instance.transform.SetParent(transform);
+            queue.Enqueue(instance);
+            instancesCreated++;
         }
+
+        void GrowPoolByDefaultStep() => GrowPoolByAmount(poolIncreaseStep);
+
+        void GrowPoolByAmount(int amount)
+            { for (int i = 0; i < amount; i++) GrowPoolByOne(); }
 
         public void Return(GameObject instance)
         {
@@ -51,7 +65,7 @@ namespace Extinction.Utils
 
         public GameObject Deliver()
         {
-            if (queue.Count == 0) GrowPool();
+            if (queue.Count == 0) GrowPoolByDefaultStep();
 
             instancesDelivered++;
             active++;

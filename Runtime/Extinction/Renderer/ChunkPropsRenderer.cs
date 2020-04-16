@@ -46,22 +46,15 @@ namespace Extinction.Renderer
 
         void RenderProp(PropData data)
         {
-            GameObject instance = GetPool(data.prefab.name).Deliver();
+            GameObject instance = WorldRenderer.singleton.propsPool.Deliver();
             instance.name = data.prefab.name;
             instance.transform.position = data.position;
+            instance.GetComponent<IPropApplier>().Apply(data.prefab);
             props.Add(instance);
         }
 
-        public void ReturnPropsToPool()
-        {
-            props.ForEach(ReturnPropToPool);
-        }
+        public void ReturnPropsToPool() => props.ForEach(ReturnPropToPool);
 
-        void ReturnPropToPool(GameObject instance)
-        {
-            GetPool(instance.name).Return(instance);
-        }
-
-        Utils.Pool GetPool(string name) => WorldRenderer.singleton.propsPoolDeliverer.GetPool(name);
+        void ReturnPropToPool(GameObject instance) => WorldRenderer.singleton.propsPool.Return(instance);
     }
 }
