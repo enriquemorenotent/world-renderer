@@ -49,7 +49,7 @@ namespace Extinction.Renderer
             GameObject instance = WorldRenderer.singleton.propsPool.Deliver();
             instance.name = data.prefab.name;
             instance.transform.position = data.position;
-            instance.GetComponent<IPropApplier>().Apply(data.prefab);
+            instance.GetComponent<IPropApplier>()?.Apply(data.prefab);
             props.Add(instance);
         }
 

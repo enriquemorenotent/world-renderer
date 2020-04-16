@@ -52,7 +52,7 @@ namespace Extinction.Renderer
             Task.Run(GenerateMeshData);
         }
 
-        public bool IsRendered() => needsToBeRendered;
+        public bool IsRendered() => !needsToBeRendered;
 
         void GenerateMeshData()
         {

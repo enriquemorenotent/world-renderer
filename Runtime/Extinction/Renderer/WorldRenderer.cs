@@ -19,8 +19,11 @@ namespace Extinction.Renderer
         [SerializeField] public Pool propsPool = null;
         [SerializeField] public World config;
         [SerializeField] private MapRenderConfig mapRenderConfig = null;
+        [SerializeField] private NavMeshSurface navMeshSurface;
+        
 
         private DistanceDetector detector;
+        private bool navMeshDirty = false;
 
         private Dictionary<Vector3, GameObject> activeChunks = new Dictionary<Vector3, GameObject>();
 
@@ -33,6 +36,18 @@ namespace Extinction.Renderer
             detector = GetComponent<DistanceDetector>();
             detector.onEscape.AddListener(() => UpdateRenderPoint(detector.TargetPosition()));
         }
+
+        void Update()
+        {
+            if (navMeshDirty && AreAllActiveChunksRendered())
+            {
+                navMeshSurface.BuildNavMeshAsync();
+                navMeshDirty = false;
+            }
+        }
+
+        bool AreAllActiveChunksRendered() =>
+            activeChunks.All(pair => pair.Value.GetComponent<ChunkRenderer>().IsRendered());
 
         void DeleteDistantChunks()
         {
@@ -84,6 +99,8 @@ namespace Extinction.Renderer
             for (int z = -mapRenderConfig.radius; z <= mapRenderConfig.radius; z++)
                 for (int x = -mapRenderConfig.radius; x <= mapRenderConfig.radius; x++)
                     InstantiateChunk(x, z);
+
+            navMeshDirty = true;
         }
 
         #region Events
